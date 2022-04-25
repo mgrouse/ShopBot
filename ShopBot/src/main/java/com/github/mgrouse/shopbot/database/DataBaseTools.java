@@ -35,18 +35,6 @@ public class DataBaseTools
 {
 
 
-    // Production:
-    // 104.128.237.201:3306
-    // user u61487_krvLrhArJK
-    // pass sGhGH=V16sLR=vPiN6aL2=s4
-    // jdbc:mysql://u61487_krvLrhArJK:sGhGH=V16sLR=vPiN6aL2=s4@104.128.237.201:3306/s61487_shop_bot
-
-    // TEST:
-    // 104.128.237.201:3306
-    // User: u61487_caS66SPPqU
-    // Pass: h.r!b3bOtw^BD.S3Y7^epCye
-    // jdbc:mysql://u61487_caS66SPPqU:h.r!b3bOtw^BD.S3Y7^epCye@104.128.237.201:3306/s61487_shop_bot_test
-
     public enum DBASE
     {
 	PROD, TEST;

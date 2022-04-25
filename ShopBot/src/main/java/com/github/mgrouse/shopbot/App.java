@@ -8,6 +8,9 @@ import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
+import com.github.mgrouse.shopbot.database.DataBaseTools;
+import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -25,6 +28,7 @@ public class App
 
     private JDA jda;
 
+    private DataBaseTools dBase;
 
     // private EventListener evListener;
 
@@ -59,8 +63,12 @@ public class App
 
     public Boolean init()
     {
-	List<SlashCommandData> slashCmds = new ArrayList<SlashCommandData>();
+	// Init PROD DBase
+	dBase = DataBaseTools.getInstance();
+	dBase.init(DBASE.PROD);
+
 	// Create the /commands
+	List<SlashCommandData> slashCmds = new ArrayList<SlashCommandData>();
 
 	// Import
 	SlashCommandData cImport = Commands.slash("import", "Imports a PC from DND Beyond into the ShopBot system.");
@@ -68,7 +76,6 @@ public class App
 	OptionData cImportOpts = new OptionData(OptionType.STRING, "PC ID",
 		"The numbers at the end of the PC's DNDB URL");
 	cImportOpts.setRequired(true);
-
 
 	cImport.addOptions(cImportOpts);
 	slashCmds.add(cImport);
@@ -94,13 +101,13 @@ public class App
 
     public void run()
     {
-	// jdaBuilder.addEventListeners(evListener);
+	jdaBuilder.addEventListeners();
 
 
     }
 
     public void cleanUp()
     {
-
+	dBase.close();
     }
 }
