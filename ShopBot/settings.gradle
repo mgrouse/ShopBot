@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'ShopBot'
-include('app')
+//include('app')
