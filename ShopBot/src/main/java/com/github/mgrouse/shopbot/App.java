@@ -21,9 +21,6 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class App
 {
-
-    private static final String token = "OTUyNzA2ODg1MzI3NDEzMzI4.Yi57bQ.b4v74IW6cVXvUlcsAK27TpAP7yY";
-
     private JDABuilder jdaBuilder;
 
     private JDA jda;
@@ -48,7 +45,7 @@ public class App
     {
 
 	// create JDA Builder
-	jdaBuilder = JDABuilder.createDefault(token);
+	jdaBuilder = JDABuilder.createDefault(Secret.BotToken);
 
 	jdaBuilder.setStatus(OnlineStatus.IDLE);
 	jdaBuilder.setActivity(Activity.playing("D&D"));

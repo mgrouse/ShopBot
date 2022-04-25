@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.mgrouse.shopbot.Secret;
 import com.github.mgrouse.shopbot.common.IItem;
 
 
@@ -32,9 +33,6 @@ import com.github.mgrouse.shopbot.common.IItem;
 
 public class DataBaseTools
 {
-    // private static final String DB_NAME = "shop_bot";
-    // private static final String PASS = "Bl4ckP4nth3r";
-    // "jdbc:mysql://localhost:3306/" + DB_NAME + "root" + PASS)
 
 
     // Production:
@@ -53,9 +51,6 @@ public class DataBaseTools
     {
 	PROD, TEST;
     }
-
-    private static final String PROD_URL = "jdbc:mysql://u61487_krvLrhArJK:sGhGH=V16sLR=vPiN6aL2=s4@104.128.237.201:3306/s61487_shop_bot";
-    private static final String TEST_URL = "jdbc:mysql://u61487_caS66SPPqU:h.r!b3bOtw^BD.S3Y7^epCye@104.128.237.201:3306/s61487_shop_bot_test";
 
     private static Logger m_logger = LoggerFactory.getLogger(DataBaseTools.class);
     private static DataBaseTools m_instance = new DataBaseTools();
@@ -76,12 +71,12 @@ public class DataBaseTools
 	String connURL = "";
 	if (base == DBASE.PROD)
 	{
-	    connURL = PROD_URL;
+	    connURL = Secret.PROD_URL;
 	}
 
 	if (base == DBASE.TEST)
 	{
-	    connURL = TEST_URL;
+	    connURL = Secret.TEST_URL;
 	}
 
 
