@@ -17,12 +17,12 @@ public class Player
 
     // Having no access modifier, the following
     // 2 methods are package-private
-    Integer getID()
+    public Integer getID()
     {
 	return m_ID;
     }
 
-    void setID(int id)
+    public void setID(int id)
     {
 	m_ID = id;
     }

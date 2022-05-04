@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.Secret;
-import com.github.mgrouse.shopbot.common.IItem;
 
 
 //Table Player
@@ -33,7 +32,6 @@ import com.github.mgrouse.shopbot.common.IItem;
 
 public class DataBaseTools
 {
-
 
     public enum DBASE
     {
@@ -54,9 +52,13 @@ public class DataBaseTools
 	return m_instance;
     }
 
-    public void init(DBASE base)
+    public Boolean init(DBASE base)
     {
 	String connURL = "";
+
+	// in case there is already a connection, call close()
+	close();
+
 	if (base == DBASE.PROD)
 	{
 	    connURL = Secret.PROD_URL;
@@ -67,11 +69,7 @@ public class DataBaseTools
 	    connURL = Secret.TEST_URL;
 	}
 
-
-	if (null == m_connection)
-	{
-	    makeJDBCConnection(connURL);
-	}
+	return makeJDBCConnection(connURL);
     }
 
     public void close()
@@ -335,42 +333,76 @@ public class DataBaseTools
 	return pc;
     }
 
+    // TODO Write test
+    public PlayerCharacter getPCByName(String playerName, String pcName)
+    {
+	PlayerCharacter retVal = null;
+
+	List<PlayerCharacter> pcList = getAllCharactersByPlayerName(playerName);
+
+	// get first word in argument pcName
+	String pcNameWord = pcName.split(" ")[0];
+
+	String pcDBWord = "";
+
+	for (PlayerCharacter pc : pcList)
+	{
+	    // get first word in pc.name
+	    pcDBWord = pc.getName().split(" ")[0];
+
+	    // if they match assign the PC and continue
+	    if (pcDBWord.contentEquals(pcNameWord))
+	    {
+		retVal = pc;
+		continue;
+	    }
+
+	} // for
+
+	return retVal;
+    }
+
+    // TODO write test
     public List<PlayerCharacter> getAllCharactersByPlayerName(String name)
     {
-	Player player = readPlayer(name);
-
-	String query = "select * from PC where PLAYER_ID = ?";
 
 	List<PlayerCharacter> ls = new ArrayList<PlayerCharacter>();
 
-	try
+	Player player = readPlayer(name);
+
+	if (null != player)
 	{
-	    PreparedStatement ps = m_connection.prepareStatement(query);
-
-	    ps.setInt(1, player.getID());
-
-	    ResultSet rs = ps.executeQuery();
-
-	    PlayerCharacter c = null;
-
-	    while (rs.next())
+	    try
 	    {
-		// ID, PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL
+		String query = "select * from PC where PLAYER_ID = ?";
+		PreparedStatement ps = m_connection.prepareStatement(query);
 
-		c = new PlayerCharacter();
-		c.setID(rs.getInt("ID"));
-		c.setPlayerId(rs.getInt("PLAYER_ID"));
-		c.setDNDB_Num(rs.getString("DNDB_NUM"));
-		c.setName(rs.getString("CHAR_NAME"));
-		c.setAvatarURL(rs.getString("AVATAR_URL"));
+		ps.setInt(1, player.getID());
 
-		ls.add(c);
+		ResultSet rs = ps.executeQuery();
+
+		PlayerCharacter c = null;
+
+		while (rs.next())
+		{
+		    // ID, PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL
+
+		    c = new PlayerCharacter();
+		    c.setID(rs.getInt("ID"));
+		    c.setPlayerId(rs.getInt("PLAYER_ID"));
+		    c.setDNDB_Num(rs.getString("DNDB_NUM"));
+		    c.setName(rs.getString("CHAR_NAME"));
+		    c.setAvatarURL(rs.getString("AVATAR_URL"));
+
+		    ls.add(c);
+		}
 	    }
-	}
-	catch (SQLException e)
-	{
-	    e.printStackTrace();
-	}
+	    catch (SQLException e)
+	    {
+		e.printStackTrace();
+	    }
+
+	} // if player
 
 	return ls;
     }
@@ -454,16 +486,17 @@ public class DataBaseTools
 	if (null != character)
 	{
 	    // DNDB_NUM, CHAR_NAME, AVATAR_URL
-	    String query = "update PC set DNDB_NUM=?, CHAR_NAME=?, AVATAR_URL=? where ID=?";
+	    String query = "update PC set PLAYER_ID=?, DNDB_NUM=?, CHAR_NAME=?, AVATAR_URL=? where ID=?";
 
 	    try
 	    {
 		PreparedStatement ps = m_connection.prepareStatement(query);
 
-		ps.setString(1, character.getDNDB_Num());
-		ps.setString(2, character.getName());
-		ps.setString(3, character.getAvatarURL());
-		ps.setInt(4, character.getID());
+		ps.setInt(1, character.getPlayerID());
+		ps.setString(2, character.getDNDB_Num());
+		ps.setString(3, character.getName());
+		ps.setString(4, character.getAvatarURL());
+		ps.setInt(5, character.getID());
 
 		int rows = ps.executeUpdate();
 
@@ -529,7 +562,7 @@ public class DataBaseTools
 
 
     // Item
-    public List<IItem> getAllItems()
+    public List<Item> getAllItems()
     {
 	return null;
     }
@@ -539,27 +572,27 @@ public class DataBaseTools
 	return null;
     }
 
-    public List<IItem> getItemsByCategory(String category)
+    public List<Item> getItemsByCategory(String category)
     {
 	return null;
     }
 
-    public IItem createItem(IItem ittem)
+    public Item createItem(Item ittem)
     {
 	return null;
     }
 
-    public IItem readItem(String name)
+    public Item readItem(String name)
     {
 	return null;
     }
 
-    public void updateItem(IItem ittem)
+    public void updateItem(Item ittem)
     {
 
     }
 
-    public void destroyItem(IItem ittem)
+    public void destroyItem(Item ittem)
     {
 
     }

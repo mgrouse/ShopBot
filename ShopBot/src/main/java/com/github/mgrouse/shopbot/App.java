@@ -10,6 +10,7 @@ import javax.security.auth.login.LoginException;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
+import com.github.mgrouse.shopbot.listener.CommandHandler;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -30,8 +31,6 @@ public class App
 
     private DataBaseTools dBase;
 
-    // private EventListener evListener;
-
     public static void main(String[] args)
     {
 
@@ -42,7 +41,7 @@ public class App
 	{
 	    app.run();
 	}
-	app.cleanUp();
+	// app.cleanUp();
     }
 
     public App()
@@ -51,7 +50,7 @@ public class App
 	// create JDA Builder
 	jdaBuilder = JDABuilder.createDefault(Secret.BotToken);
 
-	jdaBuilder.setStatus(OnlineStatus.IDLE);
+	jdaBuilder.setStatus(OnlineStatus.ONLINE);
 	jdaBuilder.setActivity(Activity.playing("D&D"));
 
     }
@@ -71,24 +70,31 @@ public class App
 	List<SlashCommandData> slashCmds = new ArrayList<SlashCommandData>();
 
 	// Import
-	SlashCommandData cImport = Commands.slash("import", "Imports a PC from DND Beyond into the ShopBot system.");
+	SlashCommandData data = Commands.slash("import", "Imports a PC from DND Beyond into the ShopBot system.");
+	OptionData opts = new OptionData(OptionType.STRING, "id", "The numbers at the end of the PC's DNDB URL.");
+	opts.setRequired(true);
+	data.addOptions(opts);
 
-	OptionData cImportOpts = new OptionData(OptionType.STRING, "PC ID",
-		"The numbers at the end of the PC's DNDB URL");
-	cImportOpts.setRequired(true);
-
-	cImport.addOptions(cImportOpts);
-	slashCmds.add(cImport);
+	slashCmds.add(data);
 
 	// Buy
+	data = Commands.slash("character", "Prepares the named PC for shopping.");
+	opts = new OptionData(OptionType.STRING, "name", "The name of the PC.");
+	opts.setRequired(true);
+	data.addOptions(opts);
 
+	slashCmds.add(data);
+
+	// Gold
 
 	try
 	{
+	    jdaBuilder.addEventListeners(new CommandHandler());
 	    jda = jdaBuilder.build();
 
 	    CommandListUpdateAction action = jda.updateCommands();
 	    action.addCommands(slashCmds);
+	    action.complete();
 
 	}
 	catch (LoginException e)
@@ -101,13 +107,11 @@ public class App
 
     public void run()
     {
-	jdaBuilder.addEventListeners();
-
 
     }
 
     public void cleanUp()
     {
-	dBase.close();
+	// dBase.close();
     }
 }

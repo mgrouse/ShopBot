@@ -4,6 +4,9 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,6 +18,7 @@ public class NetTools
 
     private static final String DnDBJsonCharacter = "https://character-service.dndbeyond.com/character/v3/character/";
 
+    private static Logger m_logger = LoggerFactory.getLogger(NetTools.class);
 
     public static PlayerCharacter getDndbPlayerCharacter(String dndbNum)
     {

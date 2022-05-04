@@ -1,28 +1,39 @@
-package com.github.mgrouse.shopbot.database;
+package com.github.mgrouse.shopbot.listener;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
-import com.github.mgrouse.shopbot.listener.CommandHandler;
+import com.github.mgrouse.shopbot.database.Player;
+import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 
-public class ListenerTest
+public class ImportCommandTest
 {
+    DataBaseTools dBase;
+
+    ImportCommandTest()
+    {
+	dBase = DataBaseTools.getInstance();
+	dBase.init(DBASE.TEST);
+    }
+
+    @BeforeEach
+    void beforeEach()
+    {
+	dBase.deleteAllPlayers();
+	dBase.deleteAllCharacters();
+    }
+
 
     @Test
     void testImportNoUser()
     {
-	DataBaseTools dBase = DataBaseTools.getInstance();
-
-	dBase.init(DBASE.TEST);
-
-	dBase.deleteAllPlayers();
-	dBase.deleteAllCharacters();
-
-	CommandHandler handler = new CommandHandler();
+	ImportCommandHandler handler = new ImportCommandHandler();
 
 	// do the Import
 	handler.performImport("GoldenScarab", "72248610");
@@ -49,13 +60,6 @@ public class ListenerTest
     @Test
     void testImportWithUser()
     {
-	DataBaseTools dBase = DataBaseTools.getInstance();
-
-	dBase.init(DBASE.TEST);
-
-	dBase.deleteAllPlayers();
-	dBase.deleteAllCharacters();
-
 	// place a user in the DB
 	Player p = new Player();
 	p.setDiscordName("GoldenScarab");
@@ -63,8 +67,7 @@ public class ListenerTest
 	p.setIsInTransaction(false);
 	dBase.createPlayer(p);
 
-
-	CommandHandler handler = new CommandHandler();
+	ImportCommandHandler handler = new ImportCommandHandler();
 
 	// do the Import
 	handler.performImport("GoldenScarab", "72248610");

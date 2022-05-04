@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
@@ -13,16 +14,25 @@ import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 
 class DBaseTest
 {
+    DataBaseTools dBase;
+
+    DBaseTest()
+    {
+	dBase = DataBaseTools.getInstance();
+	dBase.init(DBASE.TEST);
+    }
+
+    @BeforeEach
+    void beforeEach()
+    {
+	dBase.deleteAllPlayers();
+	dBase.deleteAllCharacters();
+    }
+
+
     @Test
     void playerCRUD()
     {
-	DataBaseTools dBase = DataBaseTools.getInstance();
-
-	dBase.init(DBASE.TEST);
-
-	dBase.deleteAllPlayers();
-
-
 	// Create and fill player1
 	Player player1 = new Player();
 	player1.setDiscordName("Michael");
@@ -95,19 +105,12 @@ class DBaseTest
 	// assert empty
 	assertNull(player1, "Read after Destroy ");
 
-	dBase.close();
     }
 
 
     @Test
     void CharacterCRUD()
     {
-	DataBaseTools dBase = DataBaseTools.getInstance();
-
-	dBase.init(DBASE.TEST);
-
-	dBase.deleteAllCharacters();
-
 	// Create and fill character1
 	PlayerCharacter char1 = new PlayerCharacter();
 	// char1.setID(0);
@@ -172,20 +175,11 @@ class DBaseTest
 
 	// assert empty
 	assertNull(char1, "Read Deleted");
-
-	dBase.close();
     }
 
     @Test
-    void testGetPC()
+    void testAssociatePC()
     {
-	DataBaseTools dBase = DataBaseTools.getInstance();
-
-	dBase.init(DBASE.TEST);
-
-	dBase.deleteAllPlayers();
-	dBase.deleteAllCharacters();
-
 	// Create and fill player
 	Player player = new Player();
 	player.setDiscordName("Michael");
@@ -202,28 +196,47 @@ class DBaseTest
 	player = dBase.createPlayer(player);
 	pc = dBase.createCharacter(pc);
 
+	// Assert not null
+	assertNotNull(player, "Create a Player ");
+	assertNotNull(pc, "Create a Character ");
+
 	// associate them
 	dBase.associatePlayerAndPC(player, pc);
 
 	// update them
-	dBase.updatePlayer(player);
-	dBase.updateCharacter(pc);
+	Boolean isDone = dBase.updatePlayer(player);
+	assertTrue(isDone, "Update Player");
+
+	isDone = dBase.updateCharacter(pc);
+	assertTrue(isDone, "Update Character");
 
 	// read and check Player
 	player = dBase.readPlayer("Michael");
-	assertNotNull(player, "Create a Player ");
+	assertNotNull(player, "Read a Player ");
 	assertEquals(1, player.getID(), "Player Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
 	assertEquals("87654321", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals(false, player.getIsInTransaction(), "player1.inTransaction ");
 
 	// read and check pc
-	assertNotNull(pc, "Create a Character ");
+	pc = dBase.readCharacter("12345678");
+	assertNotNull(pc, "Read a Character ");
 	assertEquals(1, pc.getID(), "Character ID ");
 	assertEquals(1, pc.getPlayerID(), "pc.getPlayerID() ");
 	assertEquals("Corvus", pc.getName(), "Character name ");
 	assertEquals("12345678", pc.getDNDB_Num(), "DNDB_Num ");
 	assertEquals("https://www.someone.com/pics/mage.png", pc.getAvatarURL(), "Avatar URL ");
+    }
+
+    @Test
+    void testGetPCByName()
+    {
+
+    }
+
+    @Test
+    void testGetAllCharactersByPlayerName()
+    {
 
     }
 }

@@ -36,22 +36,22 @@ public class PlayerCharacter
 
     // Having no access modifier, the following
     // 4 methods are package-private
-    Integer getID()
+    public Integer getID()
     {
 	return m_ID;
     }
 
-    void setID(int id)
+    public void setID(int id)
     {
 	m_ID = id;
     }
 
-    Integer getPlayerID()
+    public Integer getPlayerID()
     {
 	return m_playerID;
     }
 
-    void setPlayerId(int id)
+    public void setPlayerId(int id)
     {
 	m_playerID = id;
     }
