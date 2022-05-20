@@ -1,10 +1,11 @@
 package com.github.mgrouse.shopbot.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,21 +28,20 @@ class DBaseTest
     {
 	dBase.deleteAllPlayers();
 	dBase.deleteAllCharacters();
+	dBase.deleteAllItems();
     }
 
 
     @Test
     void playerCRUD()
     {
+	Boolean success;
+
 	// Create and fill player1
 	Player player1 = new Player();
 	player1.setDiscordName("Michael");
 	player1.setCurrCharDNDB_Id("12345678");
 	player1.setIsInTransaction(false);
-
-	// Attempt to create null
-	Player temp = dBase.createPlayer(null);
-	assertNull(temp);
 
 	// DBase create
 	player1 = dBase.createPlayer(player1);
@@ -51,13 +51,6 @@ class DBaseTest
 	assertEquals("Michael", player1.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals(false, player1.getIsInTransaction(), "player1.inTransaction ");
-
-	// attempt to read null or empty
-	temp = dBase.readPlayer(null);
-	assertNull(temp, "read Null");
-
-	temp = dBase.readPlayer("");
-	assertNull(temp, "read '' ");
 
 	// DBase read
 	Player player2 = dBase.readPlayer("NotPresent");
@@ -76,10 +69,6 @@ class DBaseTest
 	player1.setCurrCharDNDB_Id("87654321");
 	player1.setIsInTransaction(true);
 
-	// attempt to update null
-	Boolean success = dBase.updatePlayer(null);
-	assertFalse(success, "Update Player?");
-
 	// DBase update player1
 	success = dBase.updatePlayer(player1);
 	assertTrue(success, "Update Player?");
@@ -93,9 +82,6 @@ class DBaseTest
 	assertEquals("87654321", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals(true, player1.getIsInTransaction(), "player1.inTransaction ");
 
-	// attempt to delete null
-	dBase.destroyPlayer(null);
-
 	// DBase delete player1
 	dBase.destroyPlayer(player1);
 
@@ -104,13 +90,14 @@ class DBaseTest
 
 	// assert empty
 	assertNull(player1, "Read after Destroy ");
-
     }
 
 
     @Test
     void CharacterCRUD()
     {
+	Boolean success;
+
 	// Create and fill character1
 	PlayerCharacter char1 = new PlayerCharacter();
 	// char1.setID(0);
@@ -118,11 +105,6 @@ class DBaseTest
 	char1.setName("Corvus");
 	char1.setDNDB_Num("12345678");
 	char1.setAvatarURL("https://www.someone.com/pics/mage.png");
-
-	// attempt to create null
-	PlayerCharacter cTemp = dBase.createCharacter(null);
-
-	assertNull(cTemp, "Create Character(null) ");
 
 	// DBase create
 	char1 = dBase.createCharacter(char1);
@@ -149,10 +131,6 @@ class DBaseTest
 	// modify Character1
 	char1.setName("SilverMoon");
 	char1.setAvatarURL("https://some really long URL ok this isn't really all that long");
-
-	// attempt to update null
-	Boolean success = dBase.updatePlayer(null);
-	assertFalse(success, "Update Null?");
 
 	// DBase update Character1
 	success = dBase.updateCharacter(char1);
@@ -231,12 +209,382 @@ class DBaseTest
     @Test
     void testGetPCByName()
     {
+	// Create and fill player
+	Player player = new Player();
+	player.setDiscordName("Michael");
+	player.setCurrCharDNDB_Id("87654321");
+	player.setIsInTransaction(false);
+
+	player = dBase.createPlayer(player);
+
+	// Create and fill character1
+	PlayerCharacter pc1 = new PlayerCharacter();
+	pc1.setName("Corvus");
+	pc1.setDNDB_Num("12345678");
+	pc1.setAvatarURL("https://www.someone.com/pics/mage.png");
+
+	pc1 = dBase.createCharacter(pc1);
+
+	// Create and fill character2
+	PlayerCharacter pc2 = new PlayerCharacter();
+	pc2.setName("Edward");
+	pc2.setDNDB_Num("45678123");
+	pc2.setAvatarURL("https://www.someone.com/pics/cleric.png");
+
+	pc2 = dBase.createCharacter(pc2);
+
+	// Create and fill character3
+	PlayerCharacter pc3 = new PlayerCharacter();
+	pc3.setName("Rumil");
+	pc3.setDNDB_Num("87654321");
+	pc3.setAvatarURL("https://www.someone.com/pics/ranger.png");
+
+	pc3 = dBase.createCharacter(pc3);
+
+	// Associate all three
+	dBase.associatePlayerAndPC(player, pc1);
+
+	dBase.associatePlayerAndPC(player, pc2);
+
+	dBase.associatePlayerAndPC(player, pc3);
+
+	// update them
+	dBase.updatePlayer(player);
+
+	dBase.updateCharacter(pc1);
+	dBase.updateCharacter(pc2);
+	dBase.updateCharacter(pc3);
+
+	// Call with correct names
+	PlayerCharacter pcRead = dBase.getPCByPlayerNameAndPCName("Michael", "Corvus");
+
+	// assert
+	assertNotNull(pcRead, "getPCByPlayerNameAndPCName");
+	assertEquals("Corvus", pcRead.getName(), "Character name ");
+
+	// Call with incorrect Player Name
+	pcRead = dBase.getPCByPlayerNameAndPCName("Andrew", "Corvus");
+
+	// assert
+	assertNull(pcRead, "Bad Player");
+
+	// Call with incorrect PC Name
+	pcRead = dBase.getPCByPlayerNameAndPCName("Michael", "Gandalf");
+
+	// assert
+	assertNull(pcRead, "Bad PC");
 
     }
 
     @Test
     void testGetAllCharactersByPlayerName()
     {
+	// Create and fill player
+	Player player = new Player();
+	player.setDiscordName("Michael");
+	player.setCurrCharDNDB_Id("87654321");
+	player.setIsInTransaction(false);
+
+	player = dBase.createPlayer(player);
+
+	// Create and fill character1
+	PlayerCharacter pc1 = new PlayerCharacter();
+	pc1.setName("Corvus");
+	pc1.setDNDB_Num("12345678");
+	pc1.setAvatarURL("https://www.someone.com/pics/mage.png");
+
+	pc1 = dBase.createCharacter(pc1);
+
+	// Create and fill character2
+	PlayerCharacter pc2 = new PlayerCharacter();
+	pc2.setName("Edward");
+	pc2.setDNDB_Num("45678123");
+	pc2.setAvatarURL("https://www.someone.com/pics/cleric.png");
+
+	pc2 = dBase.createCharacter(pc2);
+
+	// Create and fill character3
+	PlayerCharacter pc3 = new PlayerCharacter();
+	pc3.setName("Rumil");
+	pc3.setDNDB_Num("87654321");
+	pc3.setAvatarURL("https://www.someone.com/pics/ranger.png");
+
+	pc3 = dBase.createCharacter(pc3);
+
+	// Associate TWO of three
+	dBase.associatePlayerAndPC(player, pc1);
+
+	dBase.associatePlayerAndPC(player, pc2);
+
+	// update them
+	dBase.updatePlayer(player);
+
+	dBase.updateCharacter(pc1);
+	dBase.updateCharacter(pc2);
+
+	// Call with correct Player name
+	List<PlayerCharacter> pcList = dBase.getAllCharactersByPlayerName("Michael");
+
+	// Assert
+	assertNotNull(pcList, "getAllCharactersByPlayerName");
+
+	assertEquals(2, pcList.size(), "# PC's ");
+
+	assertEquals("Corvus", pcList.get(0).getName(), "PC #0 name ");
+	assertEquals("Edward", pcList.get(1).getName(), "PC #1 name ");
+
+
+	// Call with incorrect Player Name
+	pcList = dBase.getAllCharactersByPlayerName("Andrew");
+
+	// Assert
+	assertNotNull(pcList, "getAllCharactersByPlayerName");
+	assertEquals(0, pcList.size(), "# PC's");
+    }
+
+    @Test
+    void testItemCRUD()
+    {
+	Boolean success;
+	Item item;
+
+	// Create and fill Item
+	item = new Item();
+
+	item.setName("Shortsword");
+	item.setCategory("Weapon");
+	item.setBuyAmt("10.00");
+	item.setSellAmt("5.00");
+
+	// DBase create
+	item = dBase.createItem(item);
+
+	assertNotNull(item, "Create a Item ");
+	assertEquals(1, item.getID(), "Item ID ");
+	assertEquals("Shortsword", item.getName(), "Item Name ");
+	assertEquals("Weapon", item.getCategory(), "Item Category ");
+	assertEquals("10.00", item.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("5.00", item.getSellAmt(), "Item SellAmt ");
+
+	// read
+	item = dBase.readItem("Shortsword");
+
+	// Assert
+	assertNotNull(item, "Read an Item ");
+	assertEquals(1, item.getID(), "Item ID ");
+	assertEquals("Shortsword", item.getName(), "Item Name ");
+	assertEquals("Weapon", item.getCategory(), "Item Category ");
+	assertEquals("10.00", item.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("5.00", item.getSellAmt(), "Item SellAmt ");
+
+	// modify item
+	item.setName("Short sword");
+	item.setCategory("Light Weapon");
+	item.setBuyAmt("11.20");
+	item.setSellAmt("5.60");
+
+	// DBase update item
+	success = dBase.updateItem(item);
+	assertTrue(success, "Item Update");
+
+	// DBase Read
+	item = dBase.readItem("Short sword");
+
+	// Assert
+	assertNotNull(item, "Read a Item ");
+	assertEquals(1, item.getID(), "Item ID ");
+	assertEquals("Short sword", item.getName(), "Item Name ");
+	assertEquals("Light Weapon", item.getCategory(), "Item Category ");
+	assertEquals("11.20", item.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("5.60", item.getSellAmt(), "Item SellAmt ");
+
+	// DBase delete item
+	success = dBase.destroyItem(item);
+	assertTrue(success, "destroyItem(null)");
+
+	// DBase Read
+	Item temp = dBase.readItem("Short sword");
+
+	// assert empty
+	assertNull(temp, "Read a missing Item ");
+
+	// test delete all
+	item.setID(0);
+	item = dBase.createItem(item);
+
+	// Delete All
+	dBase.deleteAllItems();
+
+	item = dBase.readItem("Shortsword");
+
+	assertNull(item, "Read after delete all Items ");
+    }
+
+    @Test
+    void testGetAllItems()
+    {
+	// create and store 3 items
+	// 1
+	Item item1 = new Item();
+
+	item1.setName("Shortsword");
+	item1.setCategory("Weapons");
+	item1.setBuyAmt("10.00");
+	item1.setSellAmt("5.00");
+
+	item1 = dBase.createItem(item1);
+
+	// 2
+	Item item2 = new Item();
+
+	item2.setName("Studded Leather");
+	item2.setCategory("Armor");
+	item2.setBuyAmt("25.00");
+	item2.setSellAmt("12.50");
+
+	item2 = dBase.createItem(item2);
+
+	// 3
+	Item item3 = new Item();
+
+	item3.setName("Arrows 20");
+	item3.setCategory("Ammo");
+	item3.setBuyAmt("2.00");
+	item3.setSellAmt("1.00");
+
+	item3 = dBase.createItem(item3);
+
+
+	// List<Item> getAllItems()
+	List<Item> items = dBase.getAllItems();
+
+	// Assert
+	Item temp = items.get(0);
+
+	assertNotNull(temp, "Get[0] Item ");
+	assertEquals(3, temp.getID(), "Item ID ");
+	assertEquals("Arrows 20", temp.getName(), "Item Name ");
+	assertEquals("Ammo", temp.getCategory(), "Item Category ");
+	assertEquals("2.00", temp.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("1.00", temp.getSellAmt(), "Item SellAmt ");
+
+	// Assert
+	temp = items.get(1);
+
+	assertNotNull(temp, "Get[1] Item ");
+	assertEquals(1, temp.getID(), "Item ID ");
+	assertEquals("Shortsword", temp.getName(), "Item Name ");
+	assertEquals("Weapons", temp.getCategory(), "Item Category ");
+	assertEquals("10.00", temp.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("5.00", temp.getSellAmt(), "Item SellAmt ");
+
+	// Assert
+	temp = items.get(2);
+
+	assertNotNull(temp, "Get[2] Item ");
+	assertEquals(2, temp.getID(), "Item ID ");
+	assertEquals("Studded Leather", temp.getName(), "Item Name ");
+	assertEquals("Armor", temp.getCategory(), "Item Category ");
+	assertEquals("25.00", temp.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("12.50", temp.getSellAmt(), "Item SellAmt ");
+
+    }
+
+    @Test
+    void testGetCategories()
+    {
+	// create and store 3 items
+	// 1
+	Item item1 = new Item();
+
+	item1.setName("Shortsword");
+	item1.setCategory("Weapons");
+	item1.setBuyAmt("10.00");
+	item1.setSellAmt("5.00");
+
+	item1 = dBase.createItem(item1);
+
+	// 2
+	Item item2 = new Item();
+
+	item2.setName("Studded Leather");
+	item2.setCategory("Armor");
+	item2.setBuyAmt("25.00");
+	item2.setSellAmt("12.50");
+
+	item2 = dBase.createItem(item2);
+
+	// 3
+	Item item3 = new Item();
+
+	item3.setName("Arrows 20");
+	item3.setCategory("Ammo");
+	item3.setBuyAmt("2.00");
+	item3.setSellAmt("1.00");
+
+	item3 = dBase.createItem(item3);
+
+	// List<String> getCategories()
+	List<String> cats = dBase.getCategories();
+
+	// Assert
+	assertNotNull(cats, "Categories not empty");
+
+	assertEquals("Ammo", cats.get(0));
+	assertEquals("Armor", cats.get(1));
+	assertEquals("Weapons", cats.get(2));
+
+    }
+
+    @Test
+    void testGetItemsByCategory()
+    {
+	// create and store 3 items
+	// 1
+	Item item1 = new Item();
+
+	item1.setName("Shortsword");
+	item1.setCategory("Weapons");
+	item1.setBuyAmt("10.00");
+	item1.setSellAmt("5.00");
+
+	item1 = dBase.createItem(item1);
+
+	// 2
+	Item item2 = new Item();
+
+	item2.setName("Studded Leather");
+	item2.setCategory("Armor");
+	item2.setBuyAmt("25.00");
+	item2.setSellAmt("12.50");
+
+	item2 = dBase.createItem(item2);
+
+	// 3
+	Item item3 = new Item();
+
+	item3.setName("Arrows 20");
+	item3.setCategory("Ammo");
+	item3.setBuyAmt("2.00");
+	item3.setSellAmt("1.00");
+
+	item3 = dBase.createItem(item3);
+
+	// List<Item> getItemsByCategory(String category)
+	List<Item> items = dBase.getItemsByCategory("Ammo");
+
+	// Assert
+	assertNotNull(items, "Items not empty");
+
+	assertEquals(1, items.size(), "Only one Ammo");
+
+	Item temp = items.get(0);
+
+	assertEquals(3, temp.getID(), "Item ID ");
+	assertEquals("Arrows 20", temp.getName(), "Item Name ");
+	assertEquals("Ammo", temp.getCategory(), "Item Category ");
+	assertEquals("2.00", temp.getBuyAmt(), "Item BuyAmt ");
+	assertEquals("1.00", temp.getSellAmt(), "Item SellAmt ");
 
     }
 }

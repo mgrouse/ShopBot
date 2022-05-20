@@ -123,7 +123,7 @@ public class DataBaseTools
     }
 
 
-    // Player
+    // Player ===================================
 
     public Player findOrCreatePlayer(String name)
     {
@@ -143,45 +143,42 @@ public class DataBaseTools
 	return p;
     }
 
-    public Player createPlayer(Player player)
+
+    public Player createPlayer(@Nonnull Player player)
     {
 	Player retVal = null;
 
-	if (null != player)
+	String query = "insert into PLAYER(DISCORD_NAME, CURR_CHAR_DNDB_NUM, IN_TRANSACTION) VALUES (?, ?, ?)";
+
+	PreparedStatement ps;
+	try
 	{
-	    String query = "insert into PLAYER(DISCORD_NAME, CURR_CHAR_DNDB_NUM, IN_TRANSACTION) VALUES (?, ?, ?)";
+	    ps = m_connection.prepareStatement(query);
+	    ps.setString(1, player.getDiscordName());
+	    ps.setString(2, player.getCurrCharDNDB_Id());
+	    ps.setBoolean(3, player.getIsInTransaction());
 
-	    PreparedStatement ps;
-	    try
+	    int n = ps.executeUpdate();
+
+	    if (1 == n)
 	    {
-		ps = m_connection.prepareStatement(query);
-		ps.setString(1, player.getDiscordName());
-		ps.setString(2, player.getCurrCharDNDB_Id());
-		ps.setBoolean(3, player.getIsInTransaction());
-
-		int n = ps.executeUpdate();
-
-		if (1 == n)
-		{
-		    // get player back out of database for the ID number
-		    retVal = readPlayer(player.getDiscordName());
-		}
-
-	    } // try
-	    catch (SQLException e)
-	    {
-		e.printStackTrace();
+		// get player back out of database for the ID number
+		retVal = readPlayer(player.getDiscordName());
 	    }
-	}
 
+	} // try
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
 	return retVal;
     }
 
-    public Player readPlayer(String name)
+    public Player readPlayer(@Nonnull String name)
     {
 	Player player = null;
 
-	if ((null != name) && (!name.contentEquals("")))
+	if (!name.contentEquals(""))
 	{
 	    String query = "select * from PLAYER where DISCORD_NAME= ?";
 
@@ -208,60 +205,55 @@ public class DataBaseTools
 	    {
 		e.printStackTrace();
 	    }
-	} // if !null && !""
+	} // if !""
 
 	return player;
     }
 
-    public Boolean updatePlayer(Player player)
+    public Boolean updatePlayer(@Nonnull Player player)
     {
 	Boolean retVal = false;
 
-	if (null != player)
+	String query = "update PLAYER set CURR_CHAR_DNDB_NUM=?, DISCORD_NAME=?, IN_TRANSACTION=? where ID=?";
+
+	try
 	{
-	    String query = "update PLAYER set CURR_CHAR_DNDB_NUM=?, DISCORD_NAME=?, IN_TRANSACTION=? where ID=?";
+	    PreparedStatement ps = m_connection.prepareStatement(query);
 
-	    try
+	    ps.setString(1, player.getCurrCharDNDB_Id());
+	    ps.setString(2, player.getDiscordName());
+	    ps.setBoolean(3, player.getIsInTransaction());
+	    ps.setInt(4, player.getID());
+
+	    int rows = ps.executeUpdate();
+
+	    if (rows > 0)
 	    {
-		PreparedStatement ps = m_connection.prepareStatement(query);
-
-		ps.setString(1, player.getCurrCharDNDB_Id());
-		ps.setString(2, player.getDiscordName());
-		ps.setBoolean(3, player.getIsInTransaction());
-		ps.setInt(4, player.getID());
-
-		int rows = ps.executeUpdate();
-
-		if (rows > 0)
-		{
-		    retVal = true;
-		}
+		retVal = true;
 	    }
-	    catch (SQLException e)
-	    {
-		e.printStackTrace();
-	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
 
-	} // if null
 	return retVal;
     }
 
-    public void destroyPlayer(Player player)
+    public void destroyPlayer(@Nonnull Player player)
     {
-	if (null != player)
+	String query = "delete from PLAYER where ID =?";
+	try
 	{
-	    String query = "delete from PLAYER where ID =?";
-	    try
-	    {
-		PreparedStatement ps = m_connection.prepareStatement(query);
-		ps.setInt(1, player.getID());
-		ps.executeUpdate();
-	    }
-	    catch (SQLException e)
-	    {
-		e.printStackTrace();
-	    }
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+	    ps.setInt(1, player.getID());
+	    ps.executeUpdate();
 	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
     }
 
     // package level function
@@ -284,14 +276,15 @@ public class DataBaseTools
     }
 
 
-    // Character
+    // Player and Character ====================================
+
     public void associatePlayerAndPC(@Nonnull Player player, @Nonnull PlayerCharacter pc)
     {
 	pc.setPlayerId(player.getID());
     }
 
 
-    public PlayerCharacter getPC(String pName, String dndb_Num)
+    public PlayerCharacter getPC(@Nonnull String pName, @Nonnull String dndb_Num)
     {
 	PlayerCharacter pc = null;
 
@@ -333,8 +326,8 @@ public class DataBaseTools
 	return pc;
     }
 
-    // TODO Write test
-    public PlayerCharacter getPCByName(String playerName, String pcName)
+
+    public PlayerCharacter getPCByPlayerNameAndPCName(@Nonnull String playerName, @Nonnull String pcName)
     {
 	PlayerCharacter retVal = null;
 
@@ -362,8 +355,8 @@ public class DataBaseTools
 	return retVal;
     }
 
-    // TODO write test
-    public List<PlayerCharacter> getAllCharactersByPlayerName(String name)
+
+    public List<PlayerCharacter> getAllCharactersByPlayerName(@Nonnull String name)
     {
 
 	List<PlayerCharacter> ls = new ArrayList<PlayerCharacter>();
@@ -407,45 +400,42 @@ public class DataBaseTools
 	return ls;
     }
 
+    // Character ====================================
 
-    public PlayerCharacter createCharacter(PlayerCharacter character)
+
+    public PlayerCharacter createCharacter(@Nonnull PlayerCharacter character)
     {
-	if (null != character)
+	// ID, PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL
+	String query = "insert into PC(PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL) VALUES (?, ?, ?, ?)";
+
+	PreparedStatement ps;
+
+	try
 	{
+	    ps = m_connection.prepareStatement(query);
 
-	    // ID, PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL
-	    String query = "insert into PC(PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL) VALUES (?, ?, ?, ?)";
+	    ps.setInt(1, character.getPlayerID());
+	    ps.setString(2, character.getDNDB_Num());
+	    ps.setString(3, character.getName());
+	    ps.setString(4, character.getAvatarURL());
 
-	    PreparedStatement ps;
+	    int n = ps.executeUpdate();
 
-	    try
+	    if (1 == n)
 	    {
-		ps = m_connection.prepareStatement(query);
-
-		ps.setInt(1, character.getPlayerID());
-		ps.setString(2, character.getDNDB_Num());
-		ps.setString(3, character.getName());
-		ps.setString(4, character.getAvatarURL());
-
-		int n = ps.executeUpdate();
-
-		if (1 == n)
-		{
-		    character = readCharacter(character.getDNDB_Num());
-		}
-
-	    } // try
-	    catch (SQLException e)
-	    {
-		e.printStackTrace();
+		character = readCharacter(character.getDNDB_Num());
 	    }
+
+	} // try
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
 	}
 
 	return character;
-
     }
 
-    public PlayerCharacter readCharacter(String DNDB_Num)
+    public PlayerCharacter readCharacter(@Nonnull String DNDB_Num)
     {
 	String query = "select * from PC where DNDB_NUM = ?";
 
@@ -479,65 +469,60 @@ public class DataBaseTools
 	return c;
     }
 
-    public Boolean updateCharacter(PlayerCharacter character)
+    public Boolean updateCharacter(@Nonnull PlayerCharacter character)
     {
 	Boolean retVal = false;
 
-	if (null != character)
+	// DNDB_NUM, CHAR_NAME, AVATAR_URL
+	String query = "update PC set PLAYER_ID=?, DNDB_NUM=?, CHAR_NAME=?, AVATAR_URL=? where ID=?";
+
+	try
 	{
-	    // DNDB_NUM, CHAR_NAME, AVATAR_URL
-	    String query = "update PC set PLAYER_ID=?, DNDB_NUM=?, CHAR_NAME=?, AVATAR_URL=? where ID=?";
+	    PreparedStatement ps = m_connection.prepareStatement(query);
 
-	    try
+	    ps.setInt(1, character.getPlayerID());
+	    ps.setString(2, character.getDNDB_Num());
+	    ps.setString(3, character.getName());
+	    ps.setString(4, character.getAvatarURL());
+	    ps.setInt(5, character.getID());
+
+	    int rows = ps.executeUpdate();
+
+	    if (rows > 0)
 	    {
-		PreparedStatement ps = m_connection.prepareStatement(query);
-
-		ps.setInt(1, character.getPlayerID());
-		ps.setString(2, character.getDNDB_Num());
-		ps.setString(3, character.getName());
-		ps.setString(4, character.getAvatarURL());
-		ps.setInt(5, character.getID());
-
-		int rows = ps.executeUpdate();
-
-		if (rows > 0)
-		{
-		    retVal = true;
-		}
+		retVal = true;
 	    }
-	    catch (SQLException e)
-	    {
-		e.printStackTrace();
-	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
 
-	} // if ! null
 	return retVal;
     }
 
-    public Boolean destroyCharacter(PlayerCharacter character)
+    public Boolean destroyCharacter(@Nonnull PlayerCharacter character)
     {
 	Boolean retVal = false;
 
-	if (null != character)
+	String query = "delete from PC where ID =?";
+	try
 	{
-	    String query = "delete from PC where ID =?";
-	    try
-	    {
-		PreparedStatement ps = m_connection.prepareStatement(query);
+	    PreparedStatement ps = m_connection.prepareStatement(query);
 
-		ps.setInt(1, character.getID());
+	    ps.setInt(1, character.getID());
 
-		int rows = ps.executeUpdate();
-		if (rows > 0)
-		{
-		    retVal = true;
-		}
-	    }
-	    catch (SQLException e)
+	    int rows = ps.executeUpdate();
+	    if (rows > 0)
 	    {
-		e.printStackTrace();
+		retVal = true;
 	    }
 	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
 	return retVal;
     }
 
@@ -557,44 +542,259 @@ public class DataBaseTools
 	{
 	    e.printStackTrace();
 	}
-
     }
 
 
-    // Item
+    // Item ================================
+
+
     public List<Item> getAllItems()
     {
-	return null;
+	List<Item> retVal = new ArrayList<Item>();
+
+	Item temp = null;
+
+	String query = "select * from ITEM";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    while (rs.next())
+	    {
+		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+		temp = new Item();
+
+		temp.setID(rs.getInt("ID"));
+		temp.setName(rs.getString("NAME"));
+		temp.setCategory(rs.getString("CATEGORY"));
+		temp.setBuyAmt(rs.getString("BUY_AMT"));
+		temp.setSellAmt(rs.getString("SELL_AMT"));
+
+		retVal.add(temp);
+	    }
+	    retVal.sort(null);
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+	return retVal;
     }
+
 
     public List<String> getCategories()
     {
-	return null;
+	List<String> retVal = new ArrayList<String>();
+
+	String temp = null;
+
+	String query = "SELECT DISTINCT(CATEGORY)from ITEM";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    while (rs.next())
+	    {
+		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+		temp = rs.getString("CATEGORY");
+
+		retVal.add(temp);
+	    }
+	    retVal.sort(null);
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+	return retVal;
     }
+
 
     public List<Item> getItemsByCategory(String category)
     {
-	return null;
+	List<Item> retVal = new ArrayList<Item>();
+
+	Item temp = null;
+
+	String query = "select * from ITEM where CATEGORY = '" + category + "'";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    while (rs.next())
+	    {
+		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+		temp = new Item();
+
+		temp.setID(rs.getInt("ID"));
+		temp.setName(rs.getString("NAME"));
+		temp.setCategory(rs.getString("CATEGORY"));
+		temp.setBuyAmt(rs.getString("BUY_AMT"));
+		temp.setSellAmt(rs.getString("SELL_AMT"));
+
+		retVal.add(temp);
+	    }
+	    retVal.sort(null);
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+	return retVal;
     }
 
-    public Item createItem(Item ittem)
+
+    public void deleteAllItems()
     {
-	return null;
+	try
+	{
+	    String query = "delete from ITEM";
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+	    ps.executeUpdate();
+
+	    query = "alter table ITEM AUTO_INCREMENT = 1";
+	    ps = m_connection.prepareStatement(query);
+	    ps.executeUpdate();
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+    }
+
+    public Item createItem(Item item)
+    {
+	Item retVal = null;
+
+	// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+	String query = "insert into ITEM(NAME, CATEGORY, BUY_AMT, SELL_AMT) VALUES (?, ?, ?, ?)";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setString(1, item.getName());
+	    ps.setString(2, item.getCategory());
+	    ps.setString(3, item.getBuyAmt().toString());
+	    ps.setString(4, item.getSellAmt().toString());
+
+	    int n = ps.executeUpdate();
+
+	    if (1 == n)
+	    {
+		retVal = readItem(item.getName());
+	    }
+
+	} // try
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+
+	return retVal;
     }
 
     public Item readItem(String name)
     {
-	return null;
+	String query = "select * from ITEM where NAME like '%" + name + "%' ";
+
+	Item retVal = null;
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    // ps.setString(1, name);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+		retVal = new Item();
+
+		retVal.setID(rs.getInt("ID"));
+		retVal.setName(rs.getString("NAME"));
+		retVal.setCategory(rs.getString("CATEGORY"));
+		retVal.setBuyAmt(rs.getString("BUY_AMT"));
+		retVal.setSellAmt(rs.getString("SELL_AMT"));
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
     }
 
-    public void updateItem(Item ittem)
+    public Boolean updateItem(Item item)
     {
+	Boolean retVal = false;
 
+	// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+	String query = "update ITEM set NAME=?, CATEGORY=?, BUY_AMT=?, SELL_AMT=? where ID=?";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setString(1, item.getName());
+	    ps.setString(2, item.getCategory());
+	    ps.setString(3, item.getBuyAmt().toString());
+	    ps.setString(4, item.getSellAmt().toString());
+
+	    ps.setInt(5, item.getID());
+
+	    int rows = ps.executeUpdate();
+
+	    if (rows == 1)
+	    {
+		retVal = true;
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
     }
 
-    public void destroyItem(Item ittem)
+    public Boolean destroyItem(Item item)
     {
+	Boolean retVal = false;
 
+	String query = "delete from ITEM where ID =?";
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setInt(1, item.getID());
+
+	    int rows = ps.executeUpdate();
+
+	    if (rows == 1)
+	    {
+		retVal = true;
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
     }
 
 

@@ -33,7 +33,7 @@ public class ImportCommandTest
     @Test
     void testImportNoUser()
     {
-	ImportCommandHandler handler = new ImportCommandHandler();
+	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
 	handler.performImport("GoldenScarab", "72248610");
@@ -67,7 +67,7 @@ public class ImportCommandTest
 	p.setIsInTransaction(false);
 	dBase.createPlayer(p);
 
-	ImportCommandHandler handler = new ImportCommandHandler();
+	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
 	handler.performImport("GoldenScarab", "72248610");

@@ -15,15 +15,17 @@ public class CharacterCommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
+    private DataBaseTools m_dBase;
+
     private SlashCommandInteractionEvent m_event = null;
 
     private Player m_player = null;
 
     private String m_message = "";
 
-    public CharacterCommandHandler()
+    public CharacterCommandHandler(DataBaseTools dBase)
     {
-
+	m_dBase = dBase;
     }
 
     public void doChar(SlashCommandInteractionEvent event)
@@ -46,10 +48,10 @@ public class CharacterCommandHandler
     // package level function for testing
     void performChar(String playerName, String pcName)
     {
-	DataBaseTools dBase = DataBaseTools.getInstance();
+	m_dBase = DataBaseTools.getInstance();
 
 	// find Player in DB
-	m_player = dBase.readPlayer(playerName);
+	m_player = m_dBase.readPlayer(playerName);
 
 	// if they are not there abort ("you have no pcs")
 	if (null == m_player)
@@ -59,25 +61,32 @@ public class CharacterCommandHandler
 	else
 	{
 	    // find pc in DB
-	    PlayerCharacter pc = dBase.getPCByName(playerName, pcName);
+	    PlayerCharacter pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
 
 	    // if pc not in DB ("did not find pc")
 	    if (null == pc)
 	    {
 		m_message = "The PC: " + pcName + " was not found";
 	    }
+	    else
+	    {
+		// set players current char to pc.dnb
+		m_player.setCurrCharDNDB_Id(pc.getDNDB_Num());
 
-	    // set players current char to pc.dnb
-	    m_player.setCurrCharDNDB_Id(pc.getDNDB_Num());
+		// update player in B
+		m_dBase.updatePlayer(m_player);
 
-	    // upate player in B
-	    dBase.updatePlayer(m_player);
+		m_message = pcName + " is ready to shop.";
+	    }
 	}
     }
 
     private void displayResults()
     {
+	// TODO Different Class? make this an Embed and
+	// if the m_pc exists, display the avatar
 
+	m_event.getHook().sendMessage(m_message).queue();
     }
 
 

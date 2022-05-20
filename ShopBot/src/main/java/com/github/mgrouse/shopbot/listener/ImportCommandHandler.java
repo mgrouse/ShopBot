@@ -16,15 +16,17 @@ public class ImportCommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
+    DataBaseTools m_dBase;
+
     private SlashCommandInteractionEvent m_event = null;
 
     private String m_message = "";
 
     private PlayerCharacter m_pc = null;
 
-    public ImportCommandHandler()
+    public ImportCommandHandler(DataBaseTools dBase)
     {
-
+	m_dBase = dBase;
     }
 
     public void doImport(SlashCommandInteractionEvent event)
@@ -48,7 +50,7 @@ public class ImportCommandHandler
     PlayerCharacter performImport(String pName, String dndb_Num)
     {
 	PlayerCharacter dBasePC, webPC;
-	DataBaseTools dBase = DataBaseTools.getInstance();
+	m_dBase = DataBaseTools.getInstance();
 
 	// get the PC from the net if any
 	webPC = NetTools.getDndbPlayerCharacter(dndb_Num);
@@ -61,7 +63,7 @@ public class ImportCommandHandler
 	else
 	{
 	    // Get PC with Player's name and PC's DNDB_NUM
-	    dBasePC = dBase.getPC(pName, dndb_Num);
+	    dBasePC = m_dBase.getPC(pName, dndb_Num);
 
 	    // If PC is in database,
 	    if (null != dBasePC)
@@ -70,7 +72,7 @@ public class ImportCommandHandler
 		dBasePC.setAvatarURL(webPC.getAvatarURL());
 		dBasePC.setName(webPC.getName());
 
-		dBase.updateCharacter(dBasePC);
+		m_dBase.updateCharacter(dBasePC);
 
 		// message user that character updated
 		m_message = webPC.getName() + " was upated.";
@@ -79,16 +81,16 @@ public class ImportCommandHandler
 	    { // PC is not in DBase
 
 		// get PC from Database (if they are not there insert them)
-		Player player = dBase.findOrCreatePlayer(pName);
+		Player player = m_dBase.findOrCreatePlayer(pName);
 
 		// Link the PC to the Player
-		dBase.associatePlayerAndPC(player, webPC);
+		m_dBase.associatePlayerAndPC(player, webPC);
 
 		// Update Player
-		dBase.updatePlayer(player);
+		m_dBase.updatePlayer(player);
 
 		// put PC in Database
-		dBase.createCharacter(webPC);
+		m_dBase.createCharacter(webPC);
 
 		// message user that character was imported
 		m_message = webPC.getName() + " was imported.";
@@ -103,6 +105,6 @@ public class ImportCommandHandler
 	// TODO Different Class? make this an Embed and
 	// if the m_pc exists, display the avatar
 
-	m_event.getChannel().sendMessage(m_message).queue();
+	m_event.getHook().sendMessage(m_message).queue();
     }
 }

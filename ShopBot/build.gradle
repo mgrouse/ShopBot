@@ -26,6 +26,9 @@ repositories
 
 dependencies 
 {
+	// Commons IO
+	implementation ("commons-io:commons-io:2.11.0")
+
     // Use JUnit Jupiter for testing.
     testImplementation ("org.junit.jupiter:junit-jupiter:5.8.1")
 

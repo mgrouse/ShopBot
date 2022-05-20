@@ -77,7 +77,7 @@ public class CharacterCommandTest
 	dBase.updatePlayer(player);
 	dBase.updateCharacter(pc);
 
-	CharacterCommandHandler handler = new CharacterCommandHandler();
+	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
 	handler.performChar(player.getDiscordName(), pc.getName());

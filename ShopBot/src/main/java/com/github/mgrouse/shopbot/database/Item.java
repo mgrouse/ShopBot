@@ -1,6 +1,9 @@
 package com.github.mgrouse.shopbot.database;
 
-public class Item
+import java.math.BigDecimal;
+
+
+public class Item implements Comparable<Item>
 {
 
     private Integer m_ID = 0;
@@ -9,9 +12,9 @@ public class Item
 
     private String m_category = "";
 
-    private Integer m_buyAmt = 0;
+    private BigDecimal m_buyAmt = new BigDecimal("0.00");
 
-    private Integer m_sellAmt = 0;
+    private BigDecimal m_sellAmt = new BigDecimal("0.00");
 
 
     public Item()
@@ -56,27 +59,34 @@ public class Item
     }
 
 
-    public Integer getBuyAmt()
+    public String getBuyAmt()
     {
-	return m_buyAmt;
+	return m_buyAmt.toString();
     }
 
 
-    public void setBuyAmt(Integer amt)
+    public void setBuyAmt(String amt)
     {
-	m_buyAmt = amt;
+	m_buyAmt = new BigDecimal(amt);
     }
 
 
-    public Integer getSellAmt()
+    public String getSellAmt()
     {
-	return m_sellAmt;
+	return m_sellAmt.toString();
     }
 
 
-    public void setSellAmt(Integer amt)
+    public void setSellAmt(String amt)
     {
-	m_sellAmt = amt;
+	m_sellAmt = new BigDecimal(amt);
     }
+
+    @Override
+    public int compareTo(Item o)
+    {
+	return this.getName().compareTo(o.getName());
+    }
+
 
 }

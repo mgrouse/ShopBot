@@ -89,7 +89,7 @@ public class App
 
 	try
 	{
-	    jdaBuilder.addEventListeners(new CommandHandler());
+	    jdaBuilder.addEventListeners(new CommandHandler(dBase));
 	    jda = jdaBuilder.build();
 
 	    CommandListUpdateAction action = jda.updateCommands();
