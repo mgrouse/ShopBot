@@ -1,63 +1,46 @@
 package com.github.mgrouse.shopbot.listener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.mgrouse.shopbot.Secret;
 import com.github.mgrouse.shopbot.database.DataBaseTools;
+import com.github.mgrouse.shopbot.database.Player;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 
-public class CommandHandler extends ListenerAdapter
+public class CommandHandler
 {
-    private static Logger m_logger = LoggerFactory.getLogger(CommandHandler.class);
 
-    DataBaseTools m_dBase;
+    private DataBaseTools m_dBase;
 
-    public CommandHandler(DataBaseTools tools)
+    private SlashCommandInteractionEvent m_event = null;
+
+    private Player m_player = null;
+
+    private String m_message = "";
+
+    public CommandHandler(DataBaseTools dBase)
     {
-	m_dBase = tools;
+	m_dBase = dBase;
     }
 
-
-    @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
+    public void go(SlashCommandInteractionEvent event)
     {
-	Boolean isEphemeral = false;
-
-	// We only have 3 seconds until Discord sends "App not responding"
-	event.deferReply(isEphemeral).queue();
-
-	// if we are on the correct channel
-	if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
-	{
-
-	    switch (event.getName())
-	    {
-		case "import":
-		{
-		    ImportCommandHandler icHandler = new ImportCommandHandler(m_dBase);
-		    icHandler.doImport(event);
-		}
-		case "character":
-		{
-		    CharacterCommandHandler ccHandler = new CharacterCommandHandler(m_dBase);
-		    ccHandler.doChar(event);
-		}
-		default:
-		{
-		    m_logger.info("Unknown Slash Command. CommandHandler.java");
-		}
-	    }// switch
-	} // if
-	else
-	{
-	    event.getHook().sendMessage("You must be on the '#shop_purchases' channel to interract with the ShopBot.")
-		    .queue();
-	}
+	parse();
+	perform();
+	display();
     }
 
+    private void parse()
+    {
 
+    }
+
+    void perform()
+    {
+
+    }
+
+    private void display()
+    {
+
+    }
 }

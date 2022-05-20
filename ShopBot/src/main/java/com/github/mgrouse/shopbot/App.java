@@ -10,7 +10,7 @@ import javax.security.auth.login.LoginException;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
-import com.github.mgrouse.shopbot.listener.CommandHandler;
+import com.github.mgrouse.shopbot.listener.CommandDispatcher;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -77,7 +77,7 @@ public class App
 
 	slashCmds.add(data);
 
-	// Buy
+	// Character
 	data = Commands.slash("character", "Prepares the named PC for shopping.");
 	opts = new OptionData(OptionType.STRING, "name", "The name of the PC.");
 	opts.setRequired(true);
@@ -85,11 +85,13 @@ public class App
 
 	slashCmds.add(data);
 
+	// Buy
+
 	// Gold
 
 	try
 	{
-	    jdaBuilder.addEventListeners(new CommandHandler(dBase));
+	    jdaBuilder.addEventListeners(new CommandDispatcher(dBase));
 	    jda = jdaBuilder.build();
 
 	    CommandListUpdateAction action = jda.updateCommands();

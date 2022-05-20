@@ -58,7 +58,7 @@ public class NetTools
     }
 
 
-    public BigDecimal getDndbCurrency(String dndbNum)
+    public static BigDecimal getDndbCurrency(String dndbNum)
     {
 	BigDecimal retVal = null;
 
@@ -90,25 +90,6 @@ public class NetTools
 	}
 
 	return retVal;
-    }
-
-    class MoneyPouch
-    {
-
-	MoneyPouch(JsonObject money)
-	{
-
-	}
-
-	public BigDecimal asBigDDecimal()
-	{
-	    return null;
-	}
-
-	public BigDecimal subtract(MoneyPouch pouch)
-	{
-	    return null;
-	}
     }
 
 

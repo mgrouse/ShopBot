@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.mgrouse.shopbot.config.ConfigFile;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 
 
@@ -36,7 +35,7 @@ public class ItemReaderTest
     void testPerformReadItems()
     {
 	// Open Resource as Buffered Reader
-	ClassLoader loader = ConfigFile.class.getClassLoader();
+	ClassLoader loader = ItemReader.class.getClassLoader();
 
 	try
 	{

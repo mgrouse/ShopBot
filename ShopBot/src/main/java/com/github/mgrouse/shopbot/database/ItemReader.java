@@ -2,14 +2,13 @@ package com.github.mgrouse.shopbot.database;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 
 public class ItemReader
 {
-    private String m_fileName = "Items.csv";;
+    private String m_fileName;
 
     DataBaseTools m_dBase;
 
@@ -41,8 +40,16 @@ public class ItemReader
 
 		// perform the read and insert
 		performReadItems(reader);
+
+		// Close file
+		reader.close();
+
+		// Rename file to read_<name>.csv
+		File rename = new File("read_" + m_fileName);
+
+		file.renameTo(rename);
 	    }
-	    catch (FileNotFoundException e)
+	    catch (Exception e)
 	    {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -81,9 +88,6 @@ public class ItemReader
 		// read a line
 		line = reader.readLine();
 	    }
-
-	    // Close file
-	    reader.close();
 	}
 	catch (IOException e)
 	{
