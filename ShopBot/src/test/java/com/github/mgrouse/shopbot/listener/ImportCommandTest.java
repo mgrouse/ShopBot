@@ -44,7 +44,7 @@ public class ImportCommandTest
 	assertNotNull(p);
 	assertEquals(1, p.getID());
 	assertEquals("", p.getCurrCharDNDB_Id());
-	assertEquals(false, p.getIsInTransaction());
+
 
 	// look for the character
 	PlayerCharacter pc = dBase.readCharacter("72248610");
@@ -64,7 +64,7 @@ public class ImportCommandTest
 	Player p = new Player();
 	p.setDiscordName("GoldenScarab");
 	p.setCurrCharDNDB_Id("");
-	p.setIsInTransaction(false);
+
 	dBase.createPlayer(p);
 
 	ImportCommandHandler handler = new ImportCommandHandler(dBase);
@@ -78,7 +78,7 @@ public class ImportCommandTest
 	assertNotNull(p);
 	assertEquals(1, p.getID());
 	assertEquals("", p.getCurrCharDNDB_Id());
-	assertEquals(false, p.getIsInTransaction());
+
 
 	// look for the character
 	PlayerCharacter pc = dBase.readCharacter("72248610");

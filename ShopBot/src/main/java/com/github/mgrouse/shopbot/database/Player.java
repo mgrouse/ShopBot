@@ -1,5 +1,8 @@
 package com.github.mgrouse.shopbot.database;
 
+import java.math.BigDecimal;
+
+
 public class Player
 {
     private Integer m_ID = 0;
@@ -8,7 +11,9 @@ public class Player
 
     private String m_discordName = "";
 
-    private Boolean m_isInTransaction = false;
+    private BigDecimal cash = new BigDecimal("0.00");
+
+    private BigDecimal bill = new BigDecimal("0.00");
 
     public Player()
     {
@@ -51,23 +56,30 @@ public class Player
 	m_discordName = name;
     }
 
-
-    public Boolean getIsInTransaction()
+    public BigDecimal getCash()
     {
-	return m_isInTransaction;
+	return cash;
     }
 
-
-    public void setIsInTransaction(Boolean inTrans)
+    public void setCash(BigDecimal cash)
     {
-	m_isInTransaction = inTrans;
+	this.cash = cash;
     }
 
+    public BigDecimal getBill()
+    {
+	return bill;
+    }
+
+    public void setBill(BigDecimal bill)
+    {
+	this.bill = bill;
+    }
 
     @Override
     public String toString()
     {
-	return "Player: [ID:" + m_ID + ", Curr_Char_ID:" + m_dndb_Id + ", Discord_Name:" + m_discordName
-		+ ", InTransaction:" + m_isInTransaction + "]";
+	return "Player [m_ID=" + m_ID + ", m_dndb_Id=" + m_dndb_Id + ", m_discordName=" + m_discordName + ", cash="
+		+ cash + ", bill=" + bill + "]";
     }
 }

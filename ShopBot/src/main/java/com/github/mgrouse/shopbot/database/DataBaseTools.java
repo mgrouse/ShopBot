@@ -1,5 +1,6 @@
 package com.github.mgrouse.shopbot.database;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,10 +18,10 @@ import com.github.mgrouse.shopbot.Secret;
 
 
 //Table Player
-// ID, DISCORD_NAME, CURR_CHAR_DNDB_NUM, IN_TRANSACTION
-//                     /\
-//Table Character      |
-// ID, PLAYER_ID, DNDB_NUM, CHAR_NAME, AVATAR_URL,     ??? Currency  ???  PLATINUM, GOLD, ELECTRUM, SILVER, COPPER, TRANS_AMT
+// ID, DISCORD_NAME, CURR_CHAR_DNDB_NUM, CASH, BILL
+//                     |
+//Table Character     \|/
+// ID, PLAYER_ID, DNDB_NUM, NAME, AVATAR_URL
 
 //Table Item
 // ID, Name, Category, Buy_AMT, Sell_AMT    AMTs are  java.math.BigDecimal
@@ -135,7 +136,8 @@ public class DataBaseTools
 
 	    p.setDiscordName(name);
 	    p.setCurrCharDNDB_Id("");
-	    p.setIsInTransaction(false);
+	    p.setCash(new BigDecimal("0.00"));
+	    p.setBill(new BigDecimal("0.00"));
 
 	    p = createPlayer(p);
 	}
@@ -148,7 +150,7 @@ public class DataBaseTools
     {
 	Player retVal = null;
 
-	String query = "insert into PLAYER(DISCORD_NAME, CURR_CHAR_DNDB_NUM, IN_TRANSACTION) VALUES (?, ?, ?)";
+	String query = "insert into PLAYER(DISCORD_NAME, CURR_CHAR_DNDB_NUM, CASH, BILL) VALUES (?, ?, ?, ?)";
 
 	PreparedStatement ps;
 	try
@@ -156,7 +158,8 @@ public class DataBaseTools
 	    ps = m_connection.prepareStatement(query);
 	    ps.setString(1, player.getDiscordName());
 	    ps.setString(2, player.getCurrCharDNDB_Id());
-	    ps.setBoolean(3, player.getIsInTransaction());
+	    ps.setString(3, player.getCash().toString());
+	    ps.setString(4, player.getBill().toString());
 
 	    int n = ps.executeUpdate();
 
@@ -197,7 +200,8 @@ public class DataBaseTools
 		    player.setID(rs.getInt("ID"));
 		    player.setCurrCharDNDB_Id(rs.getString("CURR_CHAR_DNDB_NUM"));
 		    player.setDiscordName(rs.getString("DISCORD_NAME"));
-		    player.setIsInTransaction(rs.getBoolean("IN_TRANSACTION"));
+		    player.setCash(new BigDecimal(rs.getString("CASH")));
+		    player.setBill(new BigDecimal(rs.getString("BILL")));
 		}
 
 	    } // try
@@ -214,7 +218,7 @@ public class DataBaseTools
     {
 	Boolean retVal = false;
 
-	String query = "update PLAYER set CURR_CHAR_DNDB_NUM=?, DISCORD_NAME=?, IN_TRANSACTION=? where ID=?";
+	String query = "update PLAYER set CURR_CHAR_DNDB_NUM=?, DISCORD_NAME=?, CASH=?, BILL=? where ID=?";
 
 	try
 	{
@@ -222,8 +226,9 @@ public class DataBaseTools
 
 	    ps.setString(1, player.getCurrCharDNDB_Id());
 	    ps.setString(2, player.getDiscordName());
-	    ps.setBoolean(3, player.getIsInTransaction());
-	    ps.setInt(4, player.getID());
+	    ps.setString(3, player.getCash().toString());
+	    ps.setString(4, player.getBill().toString());
+	    ps.setInt(5, player.getID());
 
 	    int rows = ps.executeUpdate();
 
@@ -355,6 +360,23 @@ public class DataBaseTools
 	return retVal;
     }
 
+    // TODO test this
+    public PlayerCharacter getActivePcByPlayerName(@Nonnull String name)
+    {
+	PlayerCharacter pc = null;
+
+	if (null != name)
+	{
+	    Player player = readPlayer(name);
+
+	    if (player != null)
+	    {
+		pc = readCharacter(player.getCurrCharDNDB_Id());
+	    }
+	}
+	return pc;
+    }
+
 
     public List<PlayerCharacter> getAllCharactersByPlayerName(@Nonnull String name)
     {
@@ -400,7 +422,7 @@ public class DataBaseTools
 	return ls;
     }
 
-    // Character ====================================
+    // Character CRUD ====================================
 
 
     public PlayerCharacter createCharacter(@Nonnull PlayerCharacter character)
@@ -570,8 +592,8 @@ public class DataBaseTools
 		temp.setID(rs.getInt("ID"));
 		temp.setName(rs.getString("NAME"));
 		temp.setCategory(rs.getString("CATEGORY"));
-		temp.setBuyAmt(rs.getString("BUY_AMT"));
-		temp.setSellAmt(rs.getString("SELL_AMT"));
+		temp.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
+		temp.setSellAmt(new BigDecimal(rs.getString("SELL_AMT")));
 
 		retVal.add(temp);
 	    }
@@ -638,8 +660,8 @@ public class DataBaseTools
 		temp.setID(rs.getInt("ID"));
 		temp.setName(rs.getString("NAME"));
 		temp.setCategory(rs.getString("CATEGORY"));
-		temp.setBuyAmt(rs.getString("BUY_AMT"));
-		temp.setSellAmt(rs.getString("SELL_AMT"));
+		temp.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
+		temp.setSellAmt(new BigDecimal(rs.getString("SELL_AMT")));
 
 		retVal.add(temp);
 	    }
@@ -726,8 +748,8 @@ public class DataBaseTools
 		retVal.setID(rs.getInt("ID"));
 		retVal.setName(rs.getString("NAME"));
 		retVal.setCategory(rs.getString("CATEGORY"));
-		retVal.setBuyAmt(rs.getString("BUY_AMT"));
-		retVal.setSellAmt(rs.getString("SELL_AMT"));
+		retVal.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
+		retVal.setSellAmt(new BigDecimal(rs.getString("SELL_AMT")));
 	    }
 	}
 	catch (SQLException e)

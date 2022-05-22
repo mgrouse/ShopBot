@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 
 public class ItemReader
@@ -79,8 +80,8 @@ public class ItemReader
 		item = new Item();
 		item.setName(values[0]);
 		item.setCategory(values[1]);
-		item.setBuyAmt(values[2]);
-		item.setSellAmt(values[3]);
+		item.setBuyAmt(new BigDecimal(values[2]));
+		item.setSellAmt(new BigDecimal(values[3]));
 
 		// Store in DB
 		m_dBase.createItem(item);

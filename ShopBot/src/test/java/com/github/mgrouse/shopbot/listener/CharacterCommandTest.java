@@ -52,7 +52,7 @@ public class CharacterCommandTest
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id("");
-	player.setIsInTransaction(false);
+
 
 	// DBase create
 	player = dBase.createPlayer(player);
@@ -89,7 +89,6 @@ public class CharacterCommandTest
 	assertEquals(1, player.getID(), "Player1 Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
-	assertEquals(false, player.getIsInTransaction(), "player.inTransaction ");
 
 	// read and assert PC
 	pc = dBase.readCharacter("12345678");

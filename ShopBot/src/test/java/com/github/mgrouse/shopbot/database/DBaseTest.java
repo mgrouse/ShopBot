@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ class DBaseTest
 	Player player1 = new Player();
 	player1.setDiscordName("Michael");
 	player1.setCurrCharDNDB_Id("12345678");
-	player1.setIsInTransaction(false);
+
 
 	// DBase create
 	player1 = dBase.createPlayer(player1);
@@ -50,7 +51,8 @@ class DBaseTest
 	assertEquals(1, player1.getID(), "Player1 Id ");
 	assertEquals("Michael", player1.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
-	assertEquals(false, player1.getIsInTransaction(), "player1.inTransaction ");
+	assertEquals("0.00", player1.getCash().toString(), "Cash ");
+	assertEquals("0.00", player1.getBill().toString(), "Bill ");
 
 	// DBase read
 	Player player2 = dBase.readPlayer("NotPresent");
@@ -62,12 +64,15 @@ class DBaseTest
 	assertEquals(1, player2.getID(), "Player2 Id ");
 	assertEquals("Michael", player2.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player2.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
-	assertEquals(false, player2.getIsInTransaction(), "player2.inTransaction ");
+	assertEquals("0.00", player1.getCash().toString(), "Cash ");
+	assertEquals("0.00", player1.getBill().toString(), "Bill ");
 
 	// modify player1
 	player1.setDiscordName("Grouse");
 	player1.setCurrCharDNDB_Id("87654321");
-	player1.setIsInTransaction(true);
+	player1.setCash(new BigDecimal("12.34"));
+	player1.setBill(new BigDecimal("56.78"));
+
 
 	// DBase update player1
 	success = dBase.updatePlayer(player1);
@@ -80,7 +85,8 @@ class DBaseTest
 	assertEquals(1, player1.getID(), "Player1 Id ");
 	assertEquals("Grouse", player1.getDiscordName(), "DiscordName ");
 	assertEquals("87654321", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
-	assertEquals(true, player1.getIsInTransaction(), "player1.inTransaction ");
+	assertEquals("12.34", player1.getCash().toString(), "Cash ");
+	assertEquals("56.78", player1.getBill().toString(), "Bill ");
 
 	// DBase delete player1
 	dBase.destroyPlayer(player1);
@@ -162,7 +168,7 @@ class DBaseTest
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id("87654321");
-	player.setIsInTransaction(false);
+
 
 	// Create and fill character1
 	PlayerCharacter pc = new PlayerCharacter();
@@ -194,7 +200,6 @@ class DBaseTest
 	assertEquals(1, player.getID(), "Player Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
 	assertEquals("87654321", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
-	assertEquals(false, player.getIsInTransaction(), "player1.inTransaction ");
 
 	// read and check pc
 	pc = dBase.readCharacter("12345678");
@@ -213,7 +218,7 @@ class DBaseTest
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id("87654321");
-	player.setIsInTransaction(false);
+
 
 	player = dBase.createPlayer(player);
 
@@ -283,7 +288,7 @@ class DBaseTest
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id("87654321");
-	player.setIsInTransaction(false);
+
 
 	player = dBase.createPlayer(player);
 
@@ -363,8 +368,8 @@ class DBaseTest
 	assertEquals(1, item.getID(), "Item ID ");
 	assertEquals("Shortsword", item.getName(), "Item Name ");
 	assertEquals("Weapon", item.getCategory(), "Item Category ");
-	assertEquals("10.00", item.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("5.00", item.getSellAmt(), "Item SellAmt ");
+	assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("5.00", item.getSellAmt().toString(), "Item SellAmt ");
 
 	// read
 	item = dBase.readItem("Shortsword");
@@ -374,8 +379,8 @@ class DBaseTest
 	assertEquals(1, item.getID(), "Item ID ");
 	assertEquals("Shortsword", item.getName(), "Item Name ");
 	assertEquals("Weapon", item.getCategory(), "Item Category ");
-	assertEquals("10.00", item.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("5.00", item.getSellAmt(), "Item SellAmt ");
+	assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("5.00", item.getSellAmt().toString(), "Item SellAmt ");
 
 	// modify item
 	item.setName("Short sword");
@@ -395,8 +400,8 @@ class DBaseTest
 	assertEquals(1, item.getID(), "Item ID ");
 	assertEquals("Short sword", item.getName(), "Item Name ");
 	assertEquals("Light Weapon", item.getCategory(), "Item Category ");
-	assertEquals("11.20", item.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("5.60", item.getSellAmt(), "Item SellAmt ");
+	assertEquals("11.20", item.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("5.60", item.getSellAmt().toString(), "Item SellAmt ");
 
 	// DBase delete item
 	success = dBase.destroyItem(item);
@@ -465,8 +470,8 @@ class DBaseTest
 	assertEquals(3, temp.getID(), "Item ID ");
 	assertEquals("Arrows 20", temp.getName(), "Item Name ");
 	assertEquals("Ammo", temp.getCategory(), "Item Category ");
-	assertEquals("2.00", temp.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("1.00", temp.getSellAmt(), "Item SellAmt ");
+	assertEquals("2.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("1.00", temp.getSellAmt().toString(), "Item SellAmt ");
 
 	// Assert
 	temp = items.get(1);
@@ -475,8 +480,8 @@ class DBaseTest
 	assertEquals(1, temp.getID(), "Item ID ");
 	assertEquals("Shortsword", temp.getName(), "Item Name ");
 	assertEquals("Weapons", temp.getCategory(), "Item Category ");
-	assertEquals("10.00", temp.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("5.00", temp.getSellAmt(), "Item SellAmt ");
+	assertEquals("10.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("5.00", temp.getSellAmt().toString(), "Item SellAmt ");
 
 	// Assert
 	temp = items.get(2);
@@ -485,8 +490,8 @@ class DBaseTest
 	assertEquals(2, temp.getID(), "Item ID ");
 	assertEquals("Studded Leather", temp.getName(), "Item Name ");
 	assertEquals("Armor", temp.getCategory(), "Item Category ");
-	assertEquals("25.00", temp.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("12.50", temp.getSellAmt(), "Item SellAmt ");
+	assertEquals("25.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("12.50", temp.getSellAmt().toString(), "Item SellAmt ");
 
     }
 
@@ -583,8 +588,8 @@ class DBaseTest
 	assertEquals(3, temp.getID(), "Item ID ");
 	assertEquals("Arrows 20", temp.getName(), "Item Name ");
 	assertEquals("Ammo", temp.getCategory(), "Item Category ");
-	assertEquals("2.00", temp.getBuyAmt(), "Item BuyAmt ");
-	assertEquals("1.00", temp.getSellAmt(), "Item SellAmt ");
+	assertEquals("2.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
+	assertEquals("1.00", temp.getSellAmt().toString(), "Item SellAmt ");
 
     }
 }

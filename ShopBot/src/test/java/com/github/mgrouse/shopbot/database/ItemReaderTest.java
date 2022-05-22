@@ -55,8 +55,8 @@ public class ItemReaderTest
 	    assertEquals(1, item.getID(), "Item ID ");
 	    assertEquals("Shortsword", item.getName(), "Item Name ");
 	    assertEquals("Weapons", item.getCategory(), "Item Category ");
-	    assertEquals("10.00", item.getBuyAmt(), "Item BuyAmt ");
-	    assertEquals("5.00", item.getSellAmt(), "Item SellAmt ");
+	    assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
+	    assertEquals("5.00", item.getSellAmt().toString(), "Item SellAmt ");
 
 
 	    item = dBase.readItem("Studded");
@@ -64,8 +64,8 @@ public class ItemReaderTest
 	    assertEquals(2, item.getID(), "Item ID ");
 	    assertEquals("Studded Leather", item.getName(), "Item Name ");
 	    assertEquals("Armor", item.getCategory(), "Item Category ");
-	    assertEquals("25.00", item.getBuyAmt(), "Item BuyAmt ");
-	    assertEquals("12.50", item.getSellAmt(), "Item SellAmt ");
+	    assertEquals("25.00", item.getBuyAmt().toString(), "Item BuyAmt ");
+	    assertEquals("12.50", item.getSellAmt().toString(), "Item SellAmt ");
 
 
 	    item = dBase.readItem("Arrows");
@@ -73,8 +73,8 @@ public class ItemReaderTest
 	    assertEquals(3, item.getID(), "Item ID ");
 	    assertEquals("Arrows 20", item.getName(), "Item Name ");
 	    assertEquals("Ammo", item.getCategory(), "Item Category ");
-	    assertEquals("2.00", item.getBuyAmt(), "Item BuyAmt ");
-	    assertEquals("1.00", item.getSellAmt(), "Item SellAmt ");
+	    assertEquals("2.00", item.getBuyAmt().toString(), "Item BuyAmt ");
+	    assertEquals("1.00", item.getSellAmt().toString(), "Item SellAmt ");
 
 	}
 	catch (Exception e)

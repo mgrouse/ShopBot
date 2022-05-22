@@ -78,7 +78,7 @@ public class App
 	slashCmds.add(data);
 
 	// Character
-	data = Commands.slash("character", "Prepares the named PC for shopping.");
+	data = Commands.slash("character", "Activates the named PC for shopping.");
 	opts = new OptionData(OptionType.STRING, "name", "The name of the PC.");
 	opts.setRequired(true);
 	data.addOptions(opts);
@@ -86,8 +86,20 @@ public class App
 	slashCmds.add(data);
 
 	// Buy
+	data = Commands.slash("buy", "Makes a purchase for the active PC.");
+	opts = new OptionData(OptionType.INTEGER, "name", "The number of Items to buy.");
+	opts.setRequired(true);
+	data.addOptions(opts);
+
+	opts = new OptionData(OptionType.STRING, "name", "The name of the Item to buy.");
+	opts.setRequired(true);
+	data.addOptions(opts);
+
+	slashCmds.add(data);
 
 	// Gold
+	data = Commands.slash("gold", "Tells ShopBot that you have deducted the gold from your D&DB sheet");
+	slashCmds.add(data);
 
 	try
 	{

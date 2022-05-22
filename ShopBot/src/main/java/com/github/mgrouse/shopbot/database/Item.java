@@ -59,23 +59,32 @@ public class Item implements Comparable<Item>
     }
 
 
-    public String getBuyAmt()
+    public BigDecimal getBuyAmt()
     {
-	return m_buyAmt.toString();
+	return m_buyAmt;
     }
 
+
+    public void setBuyAmt(BigDecimal amt)
+    {
+	m_buyAmt = amt;
+    }
 
     public void setBuyAmt(String amt)
     {
 	m_buyAmt = new BigDecimal(amt);
     }
 
-
-    public String getSellAmt()
+    public BigDecimal getSellAmt()
     {
-	return m_sellAmt.toString();
+	return m_sellAmt;
     }
 
+
+    public void setSellAmt(BigDecimal amt)
+    {
+	m_sellAmt = amt;
+    }
 
     public void setSellAmt(String amt)
     {

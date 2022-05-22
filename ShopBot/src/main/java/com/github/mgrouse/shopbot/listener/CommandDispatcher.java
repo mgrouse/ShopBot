@@ -48,8 +48,8 @@ public class CommandDispatcher extends ListenerAdapter
 		}
 		case "buy":
 		{
-		    CharacterCommandHandler ccHandler = new CharacterCommandHandler(m_dBase);
-		    ccHandler.doChar(event);
+		    BuyCommandHandler bcHandler = new BuyCommandHandler(m_dBase);
+		    bcHandler.go(event);
 		}
 		default:
 		{
