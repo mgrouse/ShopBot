@@ -11,6 +11,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
+enum CharError
+{
+    NONE, NO_PC, NO_USER
+}
+
+
 public class CharacterCommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
@@ -46,9 +52,8 @@ public class CharacterCommandHandler
     }
 
     // package level function for testing
-    void performChar(String playerName, String pcName)
+    CharError performChar(String playerName, String pcName)
     {
-	m_dBase = DataBaseTools.getInstance();
 
 	// find Player in DB
 	m_player = m_dBase.readPlayer(playerName);
@@ -57,28 +62,27 @@ public class CharacterCommandHandler
 	if (null == m_player)
 	{
 	    m_message = "You have no PC's in the ShopBot system.";
+	    return CharError.NO_USER;
 	}
-	else
+
+	// find pc in DB
+	PlayerCharacter pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
+
+	// if pc not in DB ("did not find pc")
+	if (null == pc)
 	{
-	    // find pc in DB
-	    PlayerCharacter pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
-
-	    // if pc not in DB ("did not find pc")
-	    if (null == pc)
-	    {
-		m_message = "The PC: " + pcName + " was not found";
-	    }
-	    else
-	    {
-		// set players current char to pc.dnb
-		m_player.setCurrCharDNDB_Id(pc.getDNDB_Num());
-
-		// update player in B
-		m_dBase.updatePlayer(m_player);
-
-		m_message = pcName + " is ready to shop.";
-	    }
+	    m_message = "The PC: " + pcName + " was not found";
+	    return CharError.NO_PC;
 	}
+
+	// set players current char to pc.dnb
+	m_player.setCurrCharDNDB_Id(pc.getDNDB_Num());
+
+	// update player in B
+	m_dBase.updatePlayer(m_player);
+
+	m_message = pcName + " is ready to shop.";
+	return CharError.NONE;
     }
 
     private void displayResults()

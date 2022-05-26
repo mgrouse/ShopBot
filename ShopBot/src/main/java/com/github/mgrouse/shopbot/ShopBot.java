@@ -4,26 +4,31 @@
 package com.github.mgrouse.shopbot;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
-
-import javax.security.auth.login.LoginException;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
+import com.github.mgrouse.shopbot.database.ItemReader;
 import com.github.mgrouse.shopbot.listener.CommandDispatcher;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 
-public class App
+public class ShopBot implements EventListener
+
 {
     private JDABuilder jdaBuilder;
 
@@ -36,36 +41,70 @@ public class App
 
 	// Open Config file for Bot token etc.
 
-	App app = new App();
-	if (app.init())
-	{
-	    app.run();
-	}
+	ShopBot bot = new ShopBot();
+
+	bot.init();
+
 	// app.cleanUp();
     }
 
-    public App()
-    {
 
-	// create JDA Builder
-	jdaBuilder = JDABuilder.createDefault(Secret.BotToken);
-
-	jdaBuilder.setStatus(OnlineStatus.ONLINE);
-	jdaBuilder.setActivity(Activity.playing("D&D"));
-
-    }
-
-    public String getGreeting()
-    {
-	return "Hello World!";
-    }
-
-    public Boolean init()
+    public ShopBot()
     {
 	// Init PROD DBase
 	dBase = DataBaseTools.getInstance();
 	dBase.init(DBASE.PROD);
 
+	ItemReader reader = new ItemReader(dBase);
+	reader.readItems("items.csv");
+    }
+
+    @Override
+    public void onEvent(GenericEvent event)
+    {
+	if (event instanceof ReadyEvent)
+	{
+	    run();
+	}
+    }
+
+
+    public void init()
+    {
+	// create JDA Builder
+	jdaBuilder = JDABuilder.createLight(Secret.BotToken, EnumSet.noneOf(GatewayIntent.class));
+	jdaBuilder.addEventListeners(this, new CommandDispatcher(dBase));
+	try
+	{
+	    jda = jdaBuilder.build();
+	    // optionally block until JDA is ready
+	    jda.awaitReady();
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	    cleanUp();
+	}
+	finally
+	{
+
+	}
+    }
+
+    public void run()
+    {
+	uploadCommands();
+
+	// other JDA stuff? memmory cache
+
+
+	jdaBuilder.setStatus(OnlineStatus.ONLINE);
+	jdaBuilder.setActivity(Activity.playing("D&D"));
+    }
+
+
+    private void uploadCommands()
+    {
 	// Create the /commands
 	List<SlashCommandData> slashCmds = new ArrayList<SlashCommandData>();
 
@@ -87,45 +126,31 @@ public class App
 
 	// Buy
 	data = Commands.slash("buy", "Makes a purchase for the active PC.");
-	opts = new OptionData(OptionType.INTEGER, "name", "The number of Items to buy.");
+	opts = new OptionData(OptionType.INTEGER, "amt", "The number of Items to buy.");
 	opts.setRequired(true);
 	data.addOptions(opts);
 
-	opts = new OptionData(OptionType.STRING, "name", "The name of the Item to buy.");
+	opts = new OptionData(OptionType.STRING, "item", "The item to buy.");
 	opts.setRequired(true);
 	data.addOptions(opts);
 
 	slashCmds.add(data);
 
 	// Gold
-	data = Commands.slash("gold", "Tells ShopBot that you have deducted the gold from your D&DB sheet");
+	data = Commands.slash("gold", "Tells ShopBot that you have deducted the gold from your D&DB sheet.");
 	slashCmds.add(data);
 
-	try
-	{
-	    jdaBuilder.addEventListeners(new CommandDispatcher(dBase));
-	    jda = jdaBuilder.build();
-
-	    CommandListUpdateAction action = jda.updateCommands();
-	    action.addCommands(slashCmds);
-	    action.complete();
-
-	}
-	catch (LoginException e)
-	{
-	    e.printStackTrace();
-	}
-
-	return true;
-    }
-
-    public void run()
-    {
+	// add the commands
+	CommandListUpdateAction action = jda.updateCommands();
+	action.addCommands(slashCmds);
+	action.queue();
 
     }
 
     public void cleanUp()
     {
-	// dBase.close();
+	dBase.close();
+	jda.shutdown();
     }
+
 }

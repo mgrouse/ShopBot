@@ -3,8 +3,6 @@ package com.github.mgrouse.shopbot.net;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.math.BigDecimal;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
@@ -36,13 +34,13 @@ public class NetTest
     {
 
     }
-
-    @Test
-    void getDndbCurrencyTest()
-    {
-	BigDecimal gold = NetTools.getDndbCurrency(GOBO_DNDB_NUM);
-
-	assertNotNull(gold);
-	assertEquals("11.61", gold.toString(), " Gobo's Gold");
-    }
+//    // must set currency to 1 each
+//    @Test
+//    void getDndbCurrencyTest()
+//    {
+//	BigDecimal gold = NetTools.getDndbCurrency(GOBO_DNDB_NUM);
+//
+//	assertNotNull(gold);
+//	assertEquals("11.61", gold.toString(), " Gobo's Gold");
+//    }
 }

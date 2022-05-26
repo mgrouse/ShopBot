@@ -59,7 +59,7 @@ public class CommandDispatcher extends ListenerAdapter
 	} // if channel
 	else
 	{
-	    event.getHook().sendMessage("You must be on the '#shop_purchases' channel to interract with the ShopBot.")
+	    event.getHook().sendMessage("You must be on the #shop-purchases channel to interract with the ShopBot.")
 		    .queue();
 	}
     }

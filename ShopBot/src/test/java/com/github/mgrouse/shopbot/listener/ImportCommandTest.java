@@ -14,6 +14,9 @@ import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 public class ImportCommandTest
 {
+    private static final String GOBO_DNDB_NUM = "72248610";
+    private static final String GOBO_AVATAT_URL = "https://www.dndbeyond.com/avatars/18/2/636378960438136837.jpeg?width=150&height=150&fit=crop&quality=95&auto=webp";
+
     DataBaseTools dBase;
 
     ImportCommandTest()
@@ -29,6 +32,15 @@ public class ImportCommandTest
 	dBase.deleteAllCharacters();
     }
 
+    @Test
+    void testImportNoDNDB()
+    {
+	ImportCommandHandler handler = new ImportCommandHandler(dBase);
+
+	// do the Import
+	ImportError err = handler.performImport("GoldenScarab", "00000000");
+	assertEquals(err, ImportError.NO_PC_404, "performImport");
+    }
 
     @Test
     void testImportNoUser()
@@ -36,7 +48,8 @@ public class ImportCommandTest
 	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
-	handler.performImport("GoldenScarab", "72248610");
+	ImportError err = handler.performImport("GoldenScarab", GOBO_DNDB_NUM);
+	assertEquals(err, ImportError.NONE, "performImport");
 
 	// look for the User
 	Player p = dBase.readPlayer("GoldenScarab");
@@ -47,7 +60,7 @@ public class ImportCommandTest
 
 
 	// look for the character
-	PlayerCharacter pc = dBase.readCharacter("72248610");
+	PlayerCharacter pc = dBase.readCharacter(GOBO_DNDB_NUM);
 
 	assertNotNull(pc);
 	assertEquals(1, pc.getID());
@@ -70,7 +83,8 @@ public class ImportCommandTest
 	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
-	handler.performImport("GoldenScarab", "72248610");
+	ImportError err = handler.performImport("GoldenScarab", GOBO_DNDB_NUM);
+	assertEquals(err, ImportError.NONE, "performImport");
 
 	// look for the User
 	p = dBase.readPlayer("GoldenScarab");
@@ -81,13 +95,12 @@ public class ImportCommandTest
 
 
 	// look for the character
-	PlayerCharacter pc = dBase.readCharacter("72248610");
+	PlayerCharacter pc = dBase.readCharacter(GOBO_DNDB_NUM);
 
 	assertNotNull(pc);
 	assertEquals(1, pc.getID());
 	assertEquals(1, pc.getPlayerID());
-	String url = "https://www.dndbeyond.com/avatars/18/2/636378960438136837.jpeg?width=150&height=150&fit=crop&quality=95&auto=webp";
-	assertEquals(url, pc.getAvatarURL());
+	assertEquals(GOBO_AVATAT_URL, pc.getAvatarURL());
 	assertEquals("Gobo", pc.getName());
     }
 

@@ -52,7 +52,7 @@ dependencies
 application 
 {
     // Define the main class for the application.
-    mainClass = 'com.github.mgrouse.shopbot.App'
+    mainClass = 'com.github.mgrouse.shopbot.ShopBot'
 }
 
 test

@@ -20,6 +20,42 @@ public class NetTools
 
     private static Logger m_logger = LoggerFactory.getLogger(NetTools.class);
 
+
+    public static Boolean isDNDBCharacter(String dndbNum)
+    {
+	Boolean retVal = false;
+
+	try
+	{
+	    URL url = new URL(DnDBJsonCharacter + dndbNum);
+
+	    InputStreamReader isReader = new InputStreamReader(url.openStream());
+
+	    JsonElement root = JsonParser.parseReader(isReader);
+
+	    // May be an array, may be an object.
+	    JsonObject rootObj = root.getAsJsonObject();
+
+	    JsonObject data = rootObj.get("data").getAsJsonObject();
+
+	    if (null != data)
+	    {
+		retVal = true;
+	    }
+
+	}
+	catch (Exception e)
+	{
+	    // e.printStackTrace();
+	}
+	finally
+	{
+
+	}
+	return retVal;
+    }
+
+
     public static PlayerCharacter getDndbPlayerCharacter(String dndbNum)
     {
 	PlayerCharacter retVal = null;
@@ -51,7 +87,11 @@ public class NetTools
 	}
 	catch (Exception e)
 	{
-	    e.printStackTrace();
+	    m_logger.error("Attempt to import: " + dndbNum, e);
+	}
+	finally
+	{
+
 	}
 
 	return retVal;

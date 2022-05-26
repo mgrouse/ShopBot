@@ -30,29 +30,55 @@ public class CharacterCommandTest
     }
 
     @Test
-    void testCharacterCommandNoPC()
+    void testCharacterCommandNoPlayer()
     {
-	// put a player in DB
+	// don't put a Player in DB
 
-	// don't put a PC in DB
+	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
+	CharError err = handler.performChar("Michael", "Corvus");
 
-	// read Player
-
-	// Assert
+	assertEquals(CharError.NO_USER, err, "performChar");
     }
 
     @Test
-    void testCharacterCommandWithPC()
+    void testCharacterCommandNoPC()
     {
 	// put a player in DB
-
-	// Create and fill player1
+	// Fill and Create player1
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id("");
 
+	player = dBase.createPlayer(player);
+
+	// don't put a PC in DB
+
+	// performChar(String playerName, String pcName)
+	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
+
+	CharError err = handler.performChar("Michael", "Corvus");
+
+	assertEquals(CharError.NO_PC, err, "performChar");
+
+	// read Player
+	player = dBase.readPlayer("Michael");
+
+	// Assert
+	assertNotNull(player, "createPlayer");
+	assertEquals(1, player.getID(), "Player1 Id ");
+	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
+	assertEquals("", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+    }
+
+    @Test
+    void testCharacterCommandAllGood()
+    {
+	// Create and fill player1
+	Player player = new Player();
+	player.setDiscordName("Michael");
+	player.setCurrCharDNDB_Id("");
 
 	// DBase create
 	player = dBase.createPlayer(player);
@@ -62,7 +88,6 @@ public class CharacterCommandTest
 	// Create and fill pc
 	PlayerCharacter pc = new PlayerCharacter();
 
-	// pc.setPlayerId(1);
 	pc.setName("Corvus");
 	pc.setDNDB_Num("12345678");
 	pc.setAvatarURL("https://www.someone.com/pics/mage.png");
@@ -80,7 +105,9 @@ public class CharacterCommandTest
 	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
-	handler.performChar(player.getDiscordName(), pc.getName());
+	CharError err = handler.performChar(player.getDiscordName(), pc.getName());
+
+	assertEquals(CharError.NONE, err, "performChar");
 
 	// read and assert Player
 	player = dBase.readPlayer("Michael");
@@ -99,7 +126,6 @@ public class CharacterCommandTest
 	assertEquals("Corvus", pc.getName(), "Character name ");
 	assertEquals("12345678", pc.getDNDB_Num(), "DNDB_Num ");
 	assertEquals("https://www.someone.com/pics/mage.png", pc.getAvatarURL(), "Avatar URL ");
-
 
     }
 }
