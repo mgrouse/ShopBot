@@ -30,38 +30,58 @@ public class CommandDispatcher extends ListenerAdapter
 	// We only have 3 seconds until Discord sends "App not responding"
 	event.deferReply(isEphemeral).queue();
 
-	// if we are on the correct channel
-	if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
+	switch (event.getName())
 	{
-
-	    switch (event.getName())
+	    case "import":
 	    {
-		case "import":
-		{
-		    ImportCommandHandler icHandler = new ImportCommandHandler(m_dBase);
-		    icHandler.doImport(event);
-		}
-		case "character":
-		{
-		    CharacterCommandHandler ccHandler = new CharacterCommandHandler(m_dBase);
-		    ccHandler.doChar(event);
-		}
-		case "buy":
+		ImportCommandHandler icHandler = new ImportCommandHandler(m_dBase);
+		icHandler.go(event);
+		break;
+	    }
+	    case "character":
+	    {
+		CharacterCommandHandler ccHandler = new CharacterCommandHandler(m_dBase);
+		ccHandler.go(event);
+		break;
+	    }
+	    case "buy":
+	    {
+		// if we are on the correct channel
+		if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
 		{
 		    BuyCommandHandler bcHandler = new BuyCommandHandler(m_dBase);
 		    bcHandler.go(event);
 		}
-		default:
+		else
 		{
-		    m_logger.info("Unknown Slash Command. CommandHandler.java");
+		    event.getHook()
+			    .sendMessage("You must be on the #shop-purchases channel to interract with the ShopBot.")
+			    .queue();
 		}
-	    }// switch
-	} // if channel
-	else
-	{
-	    event.getHook().sendMessage("You must be on the #shop-purchases channel to interract with the ShopBot.")
-		    .queue();
-	}
+		break;
+	    }
+	    case "gold":
+	    {
+		// if we are on the correct channel
+		if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
+		{
+		    GoldCommandHandler gcHandler = new GoldCommandHandler(m_dBase);
+		    gcHandler.go(event);
+		}
+		else
+		{
+		    event.getHook()
+			    .sendMessage("You must be on the #shop-purchases channel to interract with the ShopBot.")
+			    .queue();
+		}
+		break;
+	    }
+	    default:
+	    {
+		m_logger.info("Unknown Slash Command. CommandHandler.java");
+		event.getHook().sendMessage("ShopBot does not recognize that slash command.").queue();
+	    }
+	}// switch
     }
 
 

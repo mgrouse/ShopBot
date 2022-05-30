@@ -11,12 +11,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-enum CharError
-{
-    NONE, NO_PC, NO_USER
-}
-
-
 public class CharacterCommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
@@ -27,17 +21,29 @@ public class CharacterCommandHandler
 
     private Player m_player = null;
 
+    private PlayerCharacter m_pc = null;
+
     private String m_message = "";
+
+    enum CharError
+    {
+	NONE, NO_PC, NO_USER
+    }
 
     public CharacterCommandHandler(DataBaseTools dBase)
     {
 	m_dBase = dBase;
     }
 
-    public void doChar(SlashCommandInteractionEvent event)
+    public void go(SlashCommandInteractionEvent event)
     {
 	m_event = event;
+	parse();
+	display();
+    }
 
+    public void parse()
+    {
 	// get User's Discord Name (Not the Koni nick Name)
 	User user = m_event.getUser();
 
@@ -47,14 +53,31 @@ public class CharacterCommandHandler
 	String pcName = m_event.getOption("name").getAsString();
 
 	performChar(playerName, pcName);
-
-	displayResults();
     }
 
     // package level function for testing
     CharError performChar(String playerName, String pcName)
     {
+	CharError err = validate(playerName, pcName);
 
+	if (CharError.NONE != err)
+	{
+	    return err;
+	}
+
+	// set players current char to pc.dnb
+	m_player.setCurrCharDNDB_Id(m_pc.getDNDB_Num());
+
+	// update player in B
+	m_dBase.updatePlayer(m_player);
+
+	m_message = pcName + " is ready to shop.";
+
+	return CharError.NONE;
+    }
+
+    private CharError validate(String playerName, String pcName)
+    {
 	// find Player in DB
 	m_player = m_dBase.readPlayer(playerName);
 
@@ -66,26 +89,20 @@ public class CharacterCommandHandler
 	}
 
 	// find pc in DB
-	PlayerCharacter pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
+	m_pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
 
 	// if pc not in DB ("did not find pc")
-	if (null == pc)
+	if (null == m_pc)
 	{
 	    m_message = "The PC: " + pcName + " was not found";
 	    return CharError.NO_PC;
 	}
 
-	// set players current char to pc.dnb
-	m_player.setCurrCharDNDB_Id(pc.getDNDB_Num());
-
-	// update player in B
-	m_dBase.updatePlayer(m_player);
-
-	m_message = pcName + " is ready to shop.";
 	return CharError.NONE;
     }
 
-    private void displayResults()
+
+    private void display()
     {
 	// TODO Different Class? make this an Embed and
 	// if the m_pc exists, display the avatar

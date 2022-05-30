@@ -11,12 +11,6 @@ import com.github.mgrouse.shopbot.net.NetTools;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-enum ImportError
-{
-    NONE, NO_PC_404;
-}
-
-
 public class ImportCommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
@@ -27,84 +21,104 @@ public class ImportCommandHandler
 
     private String m_message = "";
 
+    private Player m_player = null;
+
     private PlayerCharacter m_pc = null;
+    private PlayerCharacter m_webPC = null;
+
+    enum ImportError
+    {
+	NONE, NO_PC_404;
+    }
+
 
     public ImportCommandHandler(DataBaseTools dBase)
     {
 	m_dBase = dBase;
     }
 
-    public void doImport(SlashCommandInteractionEvent event)
+    public void go(SlashCommandInteractionEvent event)
     {
 	m_event = event;
+	parse();
+	display();
+    }
 
+    public void parse()
+    {
 	// get the argument. 'id' = DNDB_NUM
 	String dndb_Num = m_event.getOption("id").getAsString();
-
-	// test to see that the string is composed of numbers
 
 	// get User's Discord Name (Not the Koni nick Name)
 	String pName = m_event.getUser().getName();
 
 	performImport(pName, dndb_Num);
-
-	outPutImportResults();
     }
 
     // package function for testing
     ImportError performImport(String pName, String dndb_Num)
     {
-	PlayerCharacter dBasePC, webPC;
+	ImportError err = validate(pName, dndb_Num);
 
+	if (ImportError.NONE != err)
+	{
+	    return err;
+	}
+
+	// get PLayer from Database (if they are not there insert them)
+	m_player = m_dBase.findOrCreatePlayer(pName);
+
+	// Get PC with Player's name and PC's DNDB_NUM
+	m_pc = m_dBase.getPC(pName, dndb_Num);
+
+	// If PC IS in database,
+	if (null != m_pc)
+	{
+	    // Update dBaseCharacter
+	    m_pc.setAvatarURL(m_webPC.getAvatarURL());
+	    m_pc.setName(m_webPC.getName());
+
+	    m_dBase.updateCharacter(m_pc);
+
+	    // message user that character updated
+	    m_message = m_pc.getName() + " was upated.";
+	}
+	else
+	{ // PC is NOT in DBase
+
+	    // put PC in Database
+	    m_pc = m_dBase.createCharacter(m_webPC);
+
+	    // Link the PC to the Player
+	    m_dBase.associatePlayerAndPC(m_player, m_pc);
+
+	    // Update Player
+	    m_dBase.updatePlayer(m_player);
+
+	    // Update m_pc
+	    m_dBase.updateCharacter(m_pc);
+
+	    // message user that character was imported
+	    m_message = m_pc.getName() + " was imported.";
+	}
+	return ImportError.NONE;
+    }
+
+    private ImportError validate(String pName, String dndb_Num)
+    {
 	// get the PC from the net if any
-	webPC = NetTools.getDndbPlayerCharacter(dndb_Num);
+	m_webPC = NetTools.getDndbPlayerCharacter(dndb_Num);
 
-	if (null == webPC)
+	if (null == m_webPC)
 	{
 	    // message user that character not found
 	    m_message = "PC with Id = " + dndb_Num + " was not found at DND Beyond.";
 	    return ImportError.NO_PC_404;
 	}
-
-	// Get PC with Player's name and PC's DNDB_NUM
-	dBasePC = m_dBase.getPC(pName, dndb_Num);
-
-	// If PC is in database,
-	if (null != dBasePC)
-	{
-	    // Update dBaseCharacter
-	    dBasePC.setAvatarURL(webPC.getAvatarURL());
-	    dBasePC.setName(webPC.getName());
-
-	    m_dBase.updateCharacter(dBasePC);
-
-	    // message user that character updated
-	    m_message = dBasePC.getName() + " was upated.";
-	}
-	else
-	{ // PC is not in DBase
-
-	    // get PC from Database (if they are not there insert them)
-	    Player player = m_dBase.findOrCreatePlayer(pName);
-
-	    // Link the PC to the Player
-	    m_dBase.associatePlayerAndPC(player, webPC);
-
-	    // Update Player
-	    m_dBase.updatePlayer(player);
-
-	    // put PC in Database
-	    dBasePC = m_dBase.createCharacter(webPC);
-
-	    // message user that character was imported
-	    m_message = dBasePC.getName() + " was imported.";
-	}
-
-	m_pc = dBasePC;
 	return ImportError.NONE;
     }
 
-    private void outPutImportResults()
+    private void display()
     {
 	// TODO Different Class? make this an Embed and
 	// if the m_pc exists, display the avatar

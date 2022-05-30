@@ -45,6 +45,15 @@ public class BuyCommandTest
 	item.setSellAmt("5.00");
 
 	item = dBase.createItem(item);
+
+	Item item2 = new Item();
+
+	item2.setName("Leather Armor");
+	item2.setCategory("Armor");
+	item2.setBuyAmt("25.00");
+	item2.setSellAmt("5.00");
+
+	item2 = dBase.createItem(item2);
     }
 
     @Test
@@ -92,7 +101,7 @@ public class BuyCommandTest
     }
 
     @Test
-    void testBuyNotInDB()
+    void testBuyPCNotInDB()
     {
 	// make player
 	Player player = new Player();
@@ -112,7 +121,7 @@ public class BuyCommandTest
     }
 
     @Test
-    void testBuyNoDNDB()
+    void testBuyPCNoDNDB()
     {
 	// make player
 	Player player = new Player();
@@ -137,29 +146,55 @@ public class BuyCommandTest
 
     }
 
-//    @Test
-//    void testBuyAllGood()
-//    {
-//	// make player
-//	Player player = new Player();
-//	player.setDiscordName("Michael");
-//	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
-//
-//	dBase.createPlayer(player);
-//
-//	// putting character in DB with broken DNDB #
-//	PlayerCharacter pc = new PlayerCharacter();
-//	pc.setName("Gobo");
-//	pc.setDNDB_Num(GOBO_DNDB_NUM);
-//
-//	dBase.createCharacter(pc);
-//
-//
-//	BuyCommandHandler handler = new BuyCommandHandler(dBase);
-//
-//	// performChar(String playerName, String pcName)
-//	BuyError err = handler.perform("Michael", 1, "Shortsword");
-//
-//	assertEquals(BuyError.INSUFFICIENT_FUNDS, err, "performBuy");
-//    }
+    @Test
+    void testBuyAllInsufficientFunds()
+    {
+	// make player
+	Player player = new Player();
+	player.setDiscordName("Michael");
+	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+
+	dBase.createPlayer(player);
+
+	// putting character in DB
+	PlayerCharacter pc = new PlayerCharacter();
+	pc.setName("Gobo");
+	pc.setDNDB_Num(GOBO_DNDB_NUM);
+
+	dBase.createCharacter(pc);
+
+
+	BuyCommandHandler handler = new BuyCommandHandler(dBase);
+
+	// performChar(String playerName, String pcName)
+	BuyError err = handler.perform("Michael", 1, "Leather Armor");
+
+	assertEquals(BuyError.INSUFFICIENT_FUNDS, err, "performBuy");
+    }
+
+    @Test
+    void testBuyAllGood()
+    {
+	// make player
+	Player player = new Player();
+	player.setDiscordName("Michael");
+	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+
+	dBase.createPlayer(player);
+
+	// putting character in DB
+	PlayerCharacter pc = new PlayerCharacter();
+	pc.setName("Gobo");
+	pc.setDNDB_Num(GOBO_DNDB_NUM);
+
+	dBase.createCharacter(pc);
+
+
+	BuyCommandHandler handler = new BuyCommandHandler(dBase);
+
+	// performChar(String playerName, String pcName)
+	BuyError err = handler.perform("Michael", 1, "Shortsword");
+
+	assertEquals(BuyError.NONE, err, "performBuy");
+    }
 }

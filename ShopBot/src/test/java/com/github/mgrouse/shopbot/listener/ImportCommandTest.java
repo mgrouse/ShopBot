@@ -10,6 +10,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
+import com.github.mgrouse.shopbot.listener.ImportCommandHandler.ImportError;
 
 
 public class ImportCommandTest

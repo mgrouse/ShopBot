@@ -40,9 +40,13 @@ public class DataBaseTools
     }
 
     private static Logger m_logger = LoggerFactory.getLogger(DataBaseTools.class);
+
     private static DataBaseTools m_instance = new DataBaseTools();
 
+    private static DBASE m_base = null;
+
     private static Connection m_connection = null;
+
 
     private DataBaseTools()
     {
@@ -53,27 +57,31 @@ public class DataBaseTools
 	return m_instance;
     }
 
-    public Boolean init(DBASE base)
+    public void init(DBASE base)
     {
 	String connURL = "";
 
-	// in case there is already a connection, call close()
-	close();
-
-	if (base == DBASE.PROD)
+	// if m_base is not equal to param
+	if (m_base != base)
 	{
-	    connURL = Secret.PROD_URL;
+	    m_base = base;
+
+	    if (base == DBASE.PROD)
+	    {
+		connURL = Secret.PROD_URL;
+	    }
+
+	    if (base == DBASE.TEST)
+	    {
+		connURL = Secret.TEST_URL;
+	    }
+
+	    makeJDBCConnection(connURL);
 	}
 
-	if (base == DBASE.TEST)
-	{
-	    connURL = Secret.TEST_URL;
-	}
-
-	return makeJDBCConnection(connURL);
     }
 
-    public void close()
+    public static void close()
     {
 	if (null != m_connection)
 	{
@@ -83,18 +91,21 @@ public class DataBaseTools
     }
 
 
-    private static Boolean makeJDBCConnection(String url)
+    private static void makeJDBCConnection(String url)
     {
-	Boolean retVal = false;
-
 	try
 	{
+	    // if there is already a connection, call close()
+	    if (m_connection != null)
+	    {
+		close();
+	    }
+
 	    m_connection = DriverManager.getConnection(url);
 
 	    if (m_connection != null)
 	    {
 		m_logger.info("Connection Successful! " + url);
-		retVal = true;
 	    }
 	    else
 	    {
@@ -107,7 +118,7 @@ public class DataBaseTools
 	    m_logger.info("MySQL Connection Failed!");
 	    e.printStackTrace();
 	}
-	return retVal;
+
     }
 
     private static void closeJDBCConnection()

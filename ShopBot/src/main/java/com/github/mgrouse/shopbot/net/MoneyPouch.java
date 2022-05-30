@@ -35,7 +35,7 @@ class MoneyPouch
 
 
 	    // Electrum
-	    coin = money.get("gp").getAsBigDecimal();
+	    coin = money.get("ep").getAsBigDecimal();
 
 	    coin = coin.divide(new BigDecimal("2.00"));
 
