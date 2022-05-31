@@ -34,14 +34,26 @@ public class CommandDispatcher extends ListenerAdapter
 	{
 	    case "import":
 	    {
-		ImportCommandHandler icHandler = new ImportCommandHandler(m_dBase);
-		icHandler.go(event);
+		ImportCommandHandler importHandler = new ImportCommandHandler(m_dBase);
+		importHandler.go(event);
+		break;
+	    }
+	    case "remove":
+	    {
+		RemoveCommandHandler removeHandler = new RemoveCommandHandler(m_dBase);
+		removeHandler.go(event);
 		break;
 	    }
 	    case "character":
 	    {
-		CharacterCommandHandler ccHandler = new CharacterCommandHandler(m_dBase);
-		ccHandler.go(event);
+		CharacterCommandHandler characterHandler = new CharacterCommandHandler(m_dBase);
+		characterHandler.go(event);
+		break;
+	    }
+	    case "abort":
+	    {
+		AbortCommandHandler abortHandler = new AbortCommandHandler(m_dBase);
+		abortHandler.go(event);
 		break;
 	    }
 	    case "buy":
@@ -49,8 +61,8 @@ public class CommandDispatcher extends ListenerAdapter
 		// if we are on the correct channel
 		if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
 		{
-		    BuyCommandHandler bcHandler = new BuyCommandHandler(m_dBase);
-		    bcHandler.go(event);
+		    BuyCommandHandler buyHandler = new BuyCommandHandler(m_dBase);
+		    buyHandler.go(event);
 		}
 		else
 		{
@@ -65,8 +77,8 @@ public class CommandDispatcher extends ListenerAdapter
 		// if we are on the correct channel
 		if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
 		{
-		    GoldCommandHandler gcHandler = new GoldCommandHandler(m_dBase);
-		    gcHandler.go(event);
+		    GoldCommandHandler goldHandler = new GoldCommandHandler(m_dBase);
+		    goldHandler.go(event);
 		}
 		else
 		{

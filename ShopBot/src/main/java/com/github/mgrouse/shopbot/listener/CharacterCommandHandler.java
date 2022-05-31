@@ -27,7 +27,7 @@ public class CharacterCommandHandler
 
     enum CharError
     {
-	NONE, NO_PC, NO_USER
+	NONE, NO_PC, NO_USER, IN_TRANSACTION;
     }
 
     public CharacterCommandHandler(DataBaseTools dBase)
@@ -96,6 +96,14 @@ public class CharacterCommandHandler
 	{
 	    m_message = "The PC: " + pcName + " was not found";
 	    return CharError.NO_PC;
+	}
+
+	// if there is an open transaction
+	if (m_player.hasBill())
+	{
+	    m_message = "The PC: " + pcName + " owes " + m_player.getBill().toString()
+		    + "in gold. You cannot switch PCs in the middle of a transaction";
+	    return CharError.IN_TRANSACTION;
 	}
 
 	return CharError.NONE;

@@ -17,18 +17,6 @@ public class PlayerCharacter
     private BigDecimal m_currency = new BigDecimal("0.0");
 
 
-//    ------------------------
-//    private Integer m_platinum = 0;
-//
-//    private Integer m_gold = 0;
-//
-//    private Integer m_electrum = 0;
-//
-//    private Integer m_silver = 0;
-//
-//    private Integer m_copper = 0;
-
-
     public PlayerCharacter()
     {
 
@@ -99,78 +87,4 @@ public class PlayerCharacter
 	return "Character: [ID:" + m_ID + ", PlayerID:" + m_playerID + ", DNDB_Num:" + m_dndbNum + ", Char_Name:"
 		+ m_name + ", Avatar_URL:" + m_avatarURL + "]";
     }
-
-
-//    @Override
-//    public BigDecimal getCurrency()
-//    {
-//	return m_currency;
-//    }
-//
-//    @Override
-//    public void setCurrency(BigDecimal currency)
-//    {
-//	m_currency = currency;
-//    }
-//
-//    @Override
-//    public Integer getPlatinum()
-//    {
-//	return m_platinum;
-//    }
-//
-//    @Override
-//    public void setPlatinum(Integer platinum)
-//    {
-//	this.m_platinum = platinum;
-//    }
-//
-//    @Override
-//    public Integer getGold()
-//    {
-//	return m_gold;
-//    }
-//
-//    @Override
-//    public void setGold(Integer gold)
-//    {
-//	m_gold = gold;
-//    }
-//
-//    @Override
-//    public Integer getElectrum()
-//    {
-//	return m_electrum;
-//    }
-//
-//    @Override
-//    public void setElectrum(Integer electrum)
-//    {
-//	this.m_electrum = electrum;
-//    }
-//
-//    @Override
-//    public Integer getSilver()
-//    {
-//	return m_silver;
-//    }
-//
-//    @Override
-//    public void setSilver(Integer silver)
-//    {
-//	m_silver = silver;
-//    }
-//
-//    @Override
-//    public Integer getCopper()
-//    {
-//	return m_copper;
-//    }
-//
-//    @Override
-//    public void setCopper(Integer copper)
-//    {
-//	m_copper = copper;
-//    }
-
 }

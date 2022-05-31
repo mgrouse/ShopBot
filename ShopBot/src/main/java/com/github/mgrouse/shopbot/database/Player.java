@@ -76,6 +76,20 @@ public class Player
 	this.bill = bill;
     }
 
+    public Boolean hasBill()
+    {
+	// 1 means bill is bigger than 0.00
+	return (this.getBill().compareTo(new BigDecimal("0.00")) == 1);
+    }
+
+    public void clearTransaction()
+    {
+	BigDecimal zero = new BigDecimal("0.00");
+
+	this.setBill(zero);
+	this.setCash(zero);
+    }
+
     @Override
     public String toString()
     {

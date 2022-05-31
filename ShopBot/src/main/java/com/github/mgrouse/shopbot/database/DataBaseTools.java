@@ -20,7 +20,7 @@ import com.github.mgrouse.shopbot.Secret;
 //Table Player
 // ID, DISCORD_NAME, CURR_CHAR_DNDB_NUM, CASH, BILL
 //                     |
-//Table Character     \|/
+//Table PC            \|/
 // ID, PLAYER_ID, DNDB_NUM, NAME, AVATAR_URL
 
 //Table Item

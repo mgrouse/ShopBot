@@ -116,13 +116,27 @@ public class ShopBot implements EventListener
 
 	slashCmds.add(data);
 
+	// Remove
+	data = Commands.slash("remove", "Removes a PC from the ShopBot system.");
+	opts = new OptionData(OptionType.STRING, "name", "The name of the PC.");
+	opts.setRequired(true);
+	data.addOptions(opts);
+
+	slashCmds.add(data);
+
 	// Character
+	// TODO -- need to look to see if there is an open transaction before we switch
 	data = Commands.slash("character", "Activates the named PC for shopping.");
 	opts = new OptionData(OptionType.STRING, "name", "The name of the PC.");
 	opts.setRequired(true);
 	data.addOptions(opts);
 
 	slashCmds.add(data);
+
+	// Abort
+	data = Commands.slash("abort", "Tells ShopBot to cancel the pendig transaction.");
+	slashCmds.add(data);
+
 
 	// Buy
 	data = Commands.slash("buy", "Makes a purchase for the active PC.");
