@@ -2,6 +2,8 @@ package com.github.mgrouse.shopbot.listener;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +53,7 @@ public class RemoveCommandTest
 
 	dBase.createPlayer(p);
 
+	// NO PC
 
 	RemoveCommandHandler rHandler = new RemoveCommandHandler(dBase);
 
@@ -60,12 +63,59 @@ public class RemoveCommandTest
     }
 
     @Test
-    void testRemoveAllGood()
+    void testRemoveAllGoodNotActivePC()
     {
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
 	p.setCurrCharDNDB_Id("12345678");
+	p.setBill(new BigDecimal("20.00"));
+	p.setCash(new BigDecimal("10.00"));
+
+	p = dBase.createPlayer(p);
+
+	// put a PC in the DB
+	PlayerCharacter pc = new PlayerCharacter();
+	pc.setName("Corvus");
+	pc.setDNDB_Num("87654321");
+
+	pc = dBase.createCharacter(pc);
+
+	// Associate them
+	dBase.associatePlayerAndPC(p, pc);
+
+	// Update them
+	dBase.updatePlayer(p);
+	dBase.updateCharacter(pc);
+
+	// test
+	RemoveCommandHandler rHandler = new RemoveCommandHandler(dBase);
+
+	RemoveError err = rHandler.performRemove("Michael", "Corvus");
+
+	// assert results of remove
+	assertEquals(RemoveError.NONE, err, " All Good");
+
+	// get the player
+	p = dBase.readPlayer("Michael");
+
+	// assert player Curr PC is NOT cleared
+	assertEquals("12345678", p.getCurrCharDNDB_Id(), "Cleared Curr Char DNB");
+
+	// assert there is still a bill
+	assertEquals("20.00", p.getBill().toString(), "Bill");
+	assertEquals("10.00", p.getCash().toString(), "Cash");
+    }
+
+    @Test
+    void testRemoveAllGoodActiveWithTransaction()
+    {
+	// put a player in the DB
+	Player p = new Player();
+	p.setDiscordName("Michael");
+	p.setCurrCharDNDB_Id("12345678");
+	p.setBill(new BigDecimal("20.00"));
+	p.setCash(new BigDecimal("10.00"));
 
 	p = dBase.createPlayer(p);
 
@@ -96,5 +146,9 @@ public class RemoveCommandTest
 
 	// assert player Curr PC is cleared
 	assertEquals("", p.getCurrCharDNDB_Id(), "Cleared Curr Char DNB");
+
+	// assert there is no bill
+	assertEquals("0.00", p.getBill().toString(), "Bill");
+	assertEquals("0.00", p.getCash().toString(), "Cash");
     }
 }

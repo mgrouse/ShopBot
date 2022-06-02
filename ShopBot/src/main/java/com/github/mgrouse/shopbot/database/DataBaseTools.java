@@ -57,7 +57,7 @@ public class DataBaseTools
 	return m_instance;
     }
 
-    public void init(DBASE base)
+    public static void init(DBASE base)
     {
 	String connURL = "";
 

@@ -62,7 +62,10 @@ public class AbortCommandHandler
 	// if there is a Transaction
 	if (m_player.hasBill())
 	{
+	    // clear and update
 	    m_player.clearTransaction();
+	    m_dBase.updatePlayer(m_player);
+
 	    m_message = m_pc.getName() + "'s transaction has been aborted.";
 	}
 	else
@@ -80,7 +83,7 @@ public class AbortCommandHandler
 
 	if (null == m_player)
 	{
-	    m_message = "You do not have any PC's in the ShopBot system.";
+	    m_message = "You do have no PC's in the ShopBot system.";
 	    return AbortError.NO_PLAYER;
 	}
 

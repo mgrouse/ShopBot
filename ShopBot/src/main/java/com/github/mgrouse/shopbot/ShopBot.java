@@ -53,7 +53,7 @@ public class ShopBot implements EventListener
     {
 	// Init PROD DBase
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.PROD);
+	DataBaseTools.init(DBASE.PROD);
 
 	ItemReader reader = new ItemReader(dBase);
 	reader.readItems("items.csv");
@@ -93,13 +93,12 @@ public class ShopBot implements EventListener
 
     public void run()
     {
-	uploadCommands();
+	jdaBuilder.setStatus(OnlineStatus.ONLINE);
+	jdaBuilder.setActivity(Activity.playing("D&D"));
 
 	// other JDA stuff? memmory cache
 
-
-	jdaBuilder.setStatus(OnlineStatus.ONLINE);
-	jdaBuilder.setActivity(Activity.playing("D&D"));
+	uploadCommands();
     }
 
 
@@ -163,7 +162,7 @@ public class ShopBot implements EventListener
 
     public void cleanUp()
     {
-	dBase.close();
+	DataBaseTools.close();
 	jda.shutdown();
     }
 

@@ -53,6 +53,7 @@ public class AbortCommandTest
 
 	dBase.createPlayer(p);
 
+	// no PC in the DB
 
 	AbortCommandHandler aHandler = new AbortCommandHandler(dBase);
 
@@ -101,8 +102,8 @@ public class AbortCommandTest
 	Player p = new Player();
 	p.setDiscordName("Michael");
 	p.setCurrCharDNDB_Id("12345678");
-	p.setCash(new BigDecimal("0.00"));
-	p.setBill(new BigDecimal("0.00"));
+	p.setCash(new BigDecimal("20.00"));
+	p.setBill(new BigDecimal("10.00"));
 
 	p = dBase.createPlayer(p);
 

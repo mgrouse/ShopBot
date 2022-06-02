@@ -15,7 +15,7 @@ public class ImportCommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
-    DataBaseTools m_dBase;
+    private DataBaseTools m_dBase;
 
     private SlashCommandInteractionEvent m_event = null;
 
@@ -24,6 +24,7 @@ public class ImportCommandHandler
     private Player m_player = null;
 
     private PlayerCharacter m_pc = null;
+
     private PlayerCharacter m_webPC = null;
 
     enum ImportError
