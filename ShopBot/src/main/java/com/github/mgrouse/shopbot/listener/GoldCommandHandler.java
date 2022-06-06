@@ -11,7 +11,7 @@ import com.github.mgrouse.shopbot.net.NetTools;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-public class GoldCommandHandler extends ShoppingCommand
+public class GoldCommandHandler extends CommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(BuyCommandHandler.class);
 
@@ -26,10 +26,6 @@ public class GoldCommandHandler extends ShoppingCommand
 
     // protected PlayerCharacter m_pc = null;
 
-    enum GoldError
-    {
-	NONE, SHOPPING_ERR, NO_CASH, NO_BILL, UNDER_PAYMENT, OVER_PAYMENT;
-    }
 
     public GoldCommandHandler(DataBaseTools dBase)
     {
@@ -52,12 +48,13 @@ public class GoldCommandHandler extends ShoppingCommand
     }
 
     // package level for testing
-    GoldError perform(String userName)
+    AppError perform(String userName)
     {
-	GoldError err = validate(userName);
+	AppError err = validate(userName);
 
-	if (GoldError.NONE != err)
+	if (AppError.NONE != err)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
@@ -77,50 +74,35 @@ public class GoldCommandHandler extends ShoppingCommand
 	// if pcCurrentCash too high -
 	if (comparison == 1)
 	{
-	    m_message = "You did not pay your bill.";
-	    return GoldError.UNDER_PAYMENT;
+	    m_message = AppError.GOLD_UNDER_PAYED.message();
+	    return AppError.GOLD_UNDER_PAYED;
 	}
 
 	// if pcCurrentCash too low -
 	if (comparison == -1)
 	{
-	    m_message = "You payed your bill, and then some, this looks funny.";
-	    return GoldError.OVER_PAYMENT;
+	    m_message = AppError.GOLD_OVER_PAYED.message();
+	    return AppError.GOLD_OVER_PAYED;
 	}
 
 	// if comparison == 0, exact - "Enjoy your Items"
 	m_message = "Enjoy your Items";
-	return GoldError.NONE;
+	return AppError.NONE;
     }
 
 
-    private GoldError validate(String userName)
+    private AppError validate(String userName)
     {
-	ShoppingError err = this.validatePlayerAndActivePC(userName);
+	AppError err = this.validatePlayerAndActivePC(userName);
 
-	if (ShoppingError.NONE != err)
+	if (AppError.NONE != err)
 	{
-	    // m_message already set by validatePlayerAndActivePC()
-	    return GoldError.SHOPPING_ERR;
+	    return err;
 	}
 
-	BigDecimal zero = new BigDecimal("0.00");
+	err = validatePlayerHasBill(m_player);
 
-	// if PLayer.Bill == 0
-	if (0 == m_player.getBill().compareTo(zero)) // 0 means numbers are same
-	{
-	    m_message = "You don't seem to have a bill to pay.";
-	    return GoldError.NO_BILL;
-	}
-
-	// if PLayer.Cash == 0
-	if (0 == m_player.getCash().compareTo(zero)) // 0 means numbers are same
-	{
-	    m_message = "You don't seem to have a cash record.";
-	    return GoldError.NO_CASH;
-	}
-
-	return GoldError.NONE;
+	return err;
     }
 
     private void display()

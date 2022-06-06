@@ -136,7 +136,6 @@ public class ShopBot implements EventListener
 	data = Commands.slash("abort", "Tells ShopBot to cancel the pendig transaction.");
 	slashCmds.add(data);
 
-
 	// Buy
 	data = Commands.slash("buy", "Makes a purchase for the active PC.");
 	opts = new OptionData(OptionType.INTEGER, "amt", "The number of Items to buy.");

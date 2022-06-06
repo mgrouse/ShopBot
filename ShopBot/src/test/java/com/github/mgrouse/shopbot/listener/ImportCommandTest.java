@@ -10,7 +10,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
-import com.github.mgrouse.shopbot.listener.ImportCommandHandler.ImportError;
+import com.github.mgrouse.shopbot.listener.CommandHandler.AppError;
 
 
 public class ImportCommandTest
@@ -23,7 +23,7 @@ public class ImportCommandTest
     ImportCommandTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
     }
 
     @BeforeEach
@@ -39,8 +39,8 @@ public class ImportCommandTest
 	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
-	ImportError err = handler.performImport("GoldenScarab", "00000000");
-	assertEquals(err, ImportError.NO_PC_404, "performImport");
+	AppError err = handler.performImport("GoldenScarab", "00000000");
+	assertEquals(err, AppError.DNDB_404, "performImport");
     }
 
     @Test
@@ -49,8 +49,8 @@ public class ImportCommandTest
 	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
-	ImportError err = handler.performImport("GoldenScarab", GOBO_DNDB_NUM);
-	assertEquals(err, ImportError.NONE, "performImport");
+	AppError err = handler.performImport("GoldenScarab", GOBO_DNDB_NUM);
+	assertEquals(err, AppError.NONE, "performImport");
 
 	// look for the User
 	Player p = dBase.readPlayer("GoldenScarab");
@@ -84,8 +84,8 @@ public class ImportCommandTest
 	ImportCommandHandler handler = new ImportCommandHandler(dBase);
 
 	// do the Import
-	ImportError err = handler.performImport("GoldenScarab", GOBO_DNDB_NUM);
-	assertEquals(err, ImportError.NONE, "performImport");
+	AppError err = handler.performImport("GoldenScarab", GOBO_DNDB_NUM);
+	assertEquals(err, AppError.NONE, "performImport");
 
 	// look for the User
 	p = dBase.readPlayer("GoldenScarab");

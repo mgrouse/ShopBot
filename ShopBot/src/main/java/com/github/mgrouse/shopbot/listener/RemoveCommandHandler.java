@@ -6,31 +6,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
-import com.github.mgrouse.shopbot.database.Player;
-import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-public class RemoveCommandHandler
+public class RemoveCommandHandler extends CommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
-    DataBaseTools m_dBase;
-
     private SlashCommandInteractionEvent m_event = null;
 
-    private String m_message = "";
+    // protected DataBaseTools m_dBase;
 
-    private Player m_player = null;
+    // protected String m_message = "";
 
-    private PlayerCharacter m_pc = null;
+    // protected Player m_player = null;
 
+    // protected PlayerCharacter m_pc = null;
 
-    enum RemoveError
-    {
-	NONE, NO_PLAYER, NO_PC_DB;
-    }
 
     public RemoveCommandHandler(DataBaseTools dBase)
     {
@@ -55,12 +48,13 @@ public class RemoveCommandHandler
 	performRemove(playerName, pcName);
     }
 
-    RemoveError performRemove(String playerName, String pcName)
+    AppError performRemove(String playerName, String pcName)
     {
-	RemoveError err = validate(playerName, pcName);
+	AppError err = validatePlayerAndNamedPC(playerName, pcName);
 
-	if (RemoveError.NONE != err)
+	if (AppError.NONE != err)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
@@ -73,39 +67,17 @@ public class RemoveCommandHandler
 	    // clear the transaction as it was for this PC
 	    m_player.setBill(new BigDecimal("0.00"));
 	    m_player.setCash(new BigDecimal("0.00"));
-	}
 
-	// update player in DB
-	m_dBase.updatePlayer(m_player);
+	    // update player in DB
+	    m_dBase.updatePlayer(m_player);
+	}
 
 	// get rid of the PC
 	m_dBase.destroyCharacter(m_pc);
 
-	return RemoveError.NONE;
+	return AppError.NONE;
     }
 
-    private RemoveError validate(String playerName, String pcName)
-    {
-	// look to see if there is a Player
-	m_player = m_dBase.readPlayer(playerName);
-
-	if (null == m_player)
-	{
-	    m_message = "You do not have any PC's in the ShopBot system.";
-	    return RemoveError.NO_PLAYER;
-	}
-
-	// look to see if there is a PC
-	m_pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
-
-	if (null == m_pc)
-	{
-	    m_message = pcName + " is not in the ShopBot system.";
-	    return RemoveError.NO_PC_DB;
-	}
-
-	return RemoveError.NONE;
-    }
 
     private void display()
     {

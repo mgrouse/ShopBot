@@ -11,7 +11,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
-import com.github.mgrouse.shopbot.listener.RemoveCommandHandler.RemoveError;
+import com.github.mgrouse.shopbot.listener.CommandHandler.AppError;
 
 
 public class RemoveCommandTest
@@ -21,7 +21,7 @@ public class RemoveCommandTest
     RemoveCommandTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
     }
 
     @BeforeEach
@@ -38,9 +38,9 @@ public class RemoveCommandTest
 
 	RemoveCommandHandler rHandler = new RemoveCommandHandler(dBase);
 
-	RemoveError err = rHandler.performRemove("Michael", "Corvus");
+	AppError err = rHandler.performRemove("Michael", "Corvus");
 
-	assertEquals(RemoveError.NO_PLAYER, err, " No Player");
+	assertEquals(AppError.NO_PLAYER, err, " No Player");
     }
 
     @Test
@@ -57,9 +57,9 @@ public class RemoveCommandTest
 
 	RemoveCommandHandler rHandler = new RemoveCommandHandler(dBase);
 
-	RemoveError err = rHandler.performRemove("Michael", "Corvus");
+	AppError err = rHandler.performRemove("Michael", "Corvus");
 
-	assertEquals(RemoveError.NO_PC_DB, err, " No PC");
+	assertEquals(AppError.NO_PC, err, " No PC");
     }
 
     @Test
@@ -91,10 +91,10 @@ public class RemoveCommandTest
 	// test
 	RemoveCommandHandler rHandler = new RemoveCommandHandler(dBase);
 
-	RemoveError err = rHandler.performRemove("Michael", "Corvus");
+	AppError err = rHandler.performRemove("Michael", "Corvus");
 
 	// assert results of remove
-	assertEquals(RemoveError.NONE, err, " All Good");
+	assertEquals(AppError.NONE, err, " All Good");
 
 	// get the player
 	p = dBase.readPlayer("Michael");
@@ -136,10 +136,10 @@ public class RemoveCommandTest
 	// test
 	RemoveCommandHandler rHandler = new RemoveCommandHandler(dBase);
 
-	RemoveError err = rHandler.performRemove("Michael", "Corvus");
+	AppError err = rHandler.performRemove("Michael", "Corvus");
 
 	// assert results of remove
-	assertEquals(RemoveError.NONE, err, " All Good");
+	assertEquals(AppError.NONE, err, " All Good");
 
 	// get the player
 	p = dBase.readPlayer("Michael");

@@ -81,15 +81,6 @@ public class DataBaseTools
 
     }
 
-    public static void close()
-    {
-	if (null != m_connection)
-	{
-	    closeJDBCConnection();
-	    m_connection = null;
-	}
-    }
-
 
     private static void makeJDBCConnection(String url)
     {
@@ -119,6 +110,15 @@ public class DataBaseTools
 	    e.printStackTrace();
 	}
 
+    }
+
+    public static void close()
+    {
+	if (null != m_connection)
+	{
+	    closeJDBCConnection();
+	    m_connection = null;
+	}
     }
 
     private static void closeJDBCConnection()
@@ -372,7 +372,7 @@ public class DataBaseTools
     }
 
     // TODO test this
-    public PlayerCharacter getActivePcByPlayerName(@Nonnull String name)
+    public PlayerCharacter getPlayersActivePc(@Nonnull String name)
     {
 	PlayerCharacter pc = null;
 

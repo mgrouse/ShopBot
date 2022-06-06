@@ -4,33 +4,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
-import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
 import com.github.mgrouse.shopbot.net.NetTools;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-public class ImportCommandHandler
+public class ImportCommandHandler extends CommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
-    private DataBaseTools m_dBase;
-
     private SlashCommandInteractionEvent m_event = null;
 
-    private String m_message = "";
+    // protected DataBaseTools m_dBase;
 
-    private Player m_player = null;
+    // protected String m_message = "";
 
-    private PlayerCharacter m_pc = null;
+    // protected Player m_player = null;
+
+    // protected PlayerCharacter m_pc = null;
 
     private PlayerCharacter m_webPC = null;
-
-    enum ImportError
-    {
-	NONE, NO_PC_404;
-    }
 
 
     public ImportCommandHandler(DataBaseTools dBase)
@@ -57,12 +51,13 @@ public class ImportCommandHandler
     }
 
     // package function for testing
-    ImportError performImport(String pName, String dndb_Num)
+    AppError performImport(String pName, String dndb_Num)
     {
-	ImportError err = validate(pName, dndb_Num);
+	AppError err = validate(pName, dndb_Num);
 
-	if (ImportError.NONE != err)
+	if (AppError.NONE != err)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
@@ -102,10 +97,10 @@ public class ImportCommandHandler
 	    // message user that character was imported
 	    m_message = m_pc.getName() + " was imported.";
 	}
-	return ImportError.NONE;
+	return AppError.NONE;
     }
 
-    private ImportError validate(String pName, String dndb_Num)
+    private AppError validate(String pName, String dndb_Num)
     {
 	// get the PC from the net if any
 	m_webPC = NetTools.getDndbPlayerCharacter(dndb_Num);
@@ -113,10 +108,9 @@ public class ImportCommandHandler
 	if (null == m_webPC)
 	{
 	    // message user that character not found
-	    m_message = "PC with Id = " + dndb_Num + " was not found at DND Beyond.";
-	    return ImportError.NO_PC_404;
+	    return AppError.DNDB_404;
 	}
-	return ImportError.NONE;
+	return AppError.NONE;
     }
 
     private void display()

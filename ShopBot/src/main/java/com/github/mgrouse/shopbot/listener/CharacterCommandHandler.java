@@ -4,31 +4,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
-import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-public class CharacterCommandHandler
+public class CharacterCommandHandler extends CommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
-    private DataBaseTools m_dBase;
-
     private SlashCommandInteractionEvent m_event = null;
 
-    private Player m_player = null;
+    // protected DataBaseTools m_dBase;
 
-    private PlayerCharacter m_pc = null;
+    // protected Player m_player = null;
 
-    private String m_message = "";
+    // protected PlayerCharacter m_pc = null;
 
-    enum CharError
-    {
-	NONE, NO_PC, NO_USER, IN_TRANSACTION;
-    }
+    // protected String m_message = "";
+
 
     public CharacterCommandHandler(DataBaseTools dBase)
     {
@@ -56,12 +51,13 @@ public class CharacterCommandHandler
     }
 
     // package level function for testing
-    CharError performChar(String playerName, String pcName)
+    AppError performChar(String playerName, String pcName)
     {
-	CharError err = validate(playerName, pcName);
+	AppError err = validate(playerName, pcName);
 
-	if (CharError.NONE != err)
+	if (AppError.NONE != err)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
@@ -73,40 +69,33 @@ public class CharacterCommandHandler
 
 	m_message = pcName + " is ready to shop.";
 
-	return CharError.NONE;
+	return AppError.NONE;
     }
 
-    private CharError validate(String playerName, String pcName)
+    private AppError validate(String playerName, String pcName)
     {
-	// find Player in DB
-	m_player = m_dBase.readPlayer(playerName);
+	AppError err = validatePlayerAndNamedPC(playerName, pcName);
 
-	// if they are not there abort ("you have no pcs")
-	if (null == m_player)
+	if (AppError.NONE != err)
 	{
-	    m_message = "You have no PC's in the ShopBot system.";
-	    return CharError.NO_USER;
-	}
-
-	// find pc in DB
-	m_pc = m_dBase.getPCByPlayerNameAndPCName(playerName, pcName);
-
-	// if pc not in DB ("did not find pc")
-	if (null == m_pc)
-	{
-	    m_message = "The PC: " + pcName + " was not found";
-	    return CharError.NO_PC;
+	    return err;
 	}
 
 	// if there is an open transaction
-	if (m_player.hasBill())
+	if (m_player.hasTransaction())
 	{
-	    m_message = "The PC: " + pcName + " owes " + m_player.getBill().toString()
-		    + "in gold. You cannot switch PCs in the middle of a transaction";
-	    return CharError.IN_TRANSACTION;
+	    // make sure we find Active PC's name
+
+	    PlayerCharacter active = m_dBase.getPlayersActivePc(playerName);
+
+	    // and warn player about bill
+	    m_message = "The Character: " + active.getName() + " owes " + m_player.getBill().toString() + " gp. /n"
+		    + AppError.IN_TRANSACTION.message();
+
+	    return AppError.IN_TRANSACTION;
 	}
 
-	return CharError.NONE;
+	return AppError.NONE;
     }
 
 

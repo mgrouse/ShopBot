@@ -66,6 +66,12 @@ public class Player
 	this.cash = cash;
     }
 
+    public Boolean hasCash()
+    {
+	// 1 means cash is bigger than 0.00
+	return (this.getCash().compareTo(new BigDecimal("0.00")) == 1);
+    }
+
     public BigDecimal getBill()
     {
 	return bill;
@@ -80,6 +86,11 @@ public class Player
     {
 	// 1 means bill is bigger than 0.00
 	return (this.getBill().compareTo(new BigDecimal("0.00")) == 1);
+    }
+
+    public Boolean hasTransaction()
+    {
+	return hasBill() && hasCash();
     }
 
     public void clearTransaction()

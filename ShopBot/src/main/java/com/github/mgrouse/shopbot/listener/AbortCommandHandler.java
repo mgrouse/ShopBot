@@ -4,31 +4,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
-import com.github.mgrouse.shopbot.database.Player;
-import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 
-public class AbortCommandHandler
+public class AbortCommandHandler extends CommandHandler
 {
     private static Logger m_logger = LoggerFactory.getLogger(ImportCommandHandler.class);
 
-    DataBaseTools m_dBase;
-
     private SlashCommandInteractionEvent m_event = null;
 
-    private String m_message = "";
 
-    private Player m_player = null;
+    // protected DataBaseTools m_dBase;
 
-    private PlayerCharacter m_pc = null;
+    // protected String m_message = "";
 
+    // protected Player m_player = null;
 
-    enum AbortError
-    {
-	NONE, NO_PLAYER, NO_ACT_PC, NO_TRANSACTION;
-    }
+    // protected PlayerCharacter m_pc = null;
+
 
     public AbortCommandHandler(DataBaseTools dBase)
     {
@@ -50,12 +44,13 @@ public class AbortCommandHandler
 	performAbort(playerName);
     }
 
-    AbortError performAbort(String playerName)
+    AppError performAbort(String playerName)
     {
-	AbortError err = validate(playerName);
+	AppError err = validate(playerName);
 
-	if (AbortError.NONE != err)
+	if (AppError.NONE != err)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
@@ -66,37 +61,23 @@ public class AbortCommandHandler
 	    m_player.clearTransaction();
 	    m_dBase.updatePlayer(m_player);
 
-	    m_message = m_pc.getName() + "'s transaction has been aborted.";
-	}
-	else
-	{
-	    m_message = m_pc.getName() + " has no transaction to abort.";
+	    m_message = "Transaction has been aborted.";
 	}
 
-	return AbortError.NONE;
+	return AppError.NONE;
     }
 
-    private AbortError validate(String playerName)
+
+    private AppError validate(String playerName)
     {
-	// look to see if there is a Player
-	m_player = m_dBase.readPlayer(playerName);
+	AppError err = validatePlayer(playerName);
 
-	if (null == m_player)
+	if (AppError.NONE != err)
 	{
-	    m_message = "You do have no PC's in the ShopBot system.";
-	    return AbortError.NO_PLAYER;
+	    return err;
 	}
 
-	// look to see if there is a PC
-	m_pc = m_dBase.getActivePcByPlayerName(playerName);
-
-	if (null == m_pc)
-	{
-	    m_message = "You have no active PC in the ShopBot system.";
-	    return AbortError.NO_ACT_PC;
-	}
-
-	return AbortError.NONE;
+	return validatePlayerHasBill(m_player);
     }
 
     private void display()

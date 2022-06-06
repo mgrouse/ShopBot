@@ -10,7 +10,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Item;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
-import com.github.mgrouse.shopbot.listener.BuyCommandHandler.BuyError;
+import com.github.mgrouse.shopbot.listener.CommandHandler.AppError;
 
 
 public class BuyCommandTest
@@ -24,7 +24,7 @@ public class BuyCommandTest
     BuyCommandTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
 
 	// Place Items in DB
     }
@@ -62,14 +62,14 @@ public class BuyCommandTest
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
 	// 0 items
-	BuyError err = handler.perform("Michael", 0, "Shortsword");
+	AppError err = handler.perform("Michael", 0, "Shortsword");
 
-	assertEquals(BuyError.NO_AMT, err, "performBuy");
+	assertEquals(AppError.BUY_NO_AMT, err, "performBuy");
 
 	// bad item name
 	err = handler.perform("Michael", 1, "XYZ");
 
-	assertEquals(BuyError.UNKNOWN_ITEM, err, "performBuy");
+	assertEquals(AppError.BUY_UNKNOWN_ITEM, err, "performBuy");
     }
 
     @Test
@@ -78,9 +78,9 @@ public class BuyCommandTest
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
 	// Did not set up player
-	BuyError err = handler.perform("Michael", 1, "Shortsword");
+	AppError err = handler.perform("Michael", 1, "Shortsword");
 
-	assertEquals(BuyError.NO_PLAYER, err, "performBuy");
+	assertEquals(AppError.NO_PLAYER, err, "performBuy");
     }
 
     @Test
@@ -95,9 +95,9 @@ public class BuyCommandTest
 
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
-	BuyError err = handler.perform("Michael", 1, "Shortsword");
+	AppError err = handler.perform("Michael", 1, "Shortsword");
 
-	assertEquals(BuyError.NO_ACT_PC, err, "performBuy");
+	assertEquals(AppError.ACT_PC_NOT_SET, err, "performBuy");
     }
 
     @Test
@@ -114,9 +114,9 @@ public class BuyCommandTest
 
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
-	BuyError err = handler.perform("Michael", 1, "Shortsword");
+	AppError err = handler.perform("Michael", 1, "Shortsword");
 
-	assertEquals(BuyError.DB_ERR, err, "performBuy");
+	assertEquals(AppError.ACT_PC_DBASE_404, err, "performBuy");
 
     }
 
@@ -140,9 +140,9 @@ public class BuyCommandTest
 
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
-	BuyError err = handler.perform("Michael", 1, "Shortsword");
+	AppError err = handler.perform("Michael", 1, "Shortsword");
 
-	assertEquals(BuyError.NO_DDNDB, err, "performBuy");
+	assertEquals(AppError.ACT_PC_DNDB_404, err, "performBuy");
 
     }
 
@@ -167,9 +167,9 @@ public class BuyCommandTest
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
-	BuyError err = handler.perform("Michael", 1, "Leather Armor");
+	AppError err = handler.perform("Michael", 1, "Leather Armor");
 
-	assertEquals(BuyError.INSUFFICIENT_FUNDS, err, "performBuy");
+	assertEquals(AppError.BUY_INSUFFICIENT_FUNDS, err, "performBuy");
     }
 
     @Test
@@ -193,8 +193,8 @@ public class BuyCommandTest
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
-	BuyError err = handler.perform("Michael", 1, "Shortsword");
+	AppError err = handler.perform("Michael", 1, "Shortsword");
 
-	assertEquals(BuyError.NONE, err, "performBuy");
+	assertEquals(AppError.NONE, err, "performBuy");
     }
 }

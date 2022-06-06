@@ -11,7 +11,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
-import com.github.mgrouse.shopbot.listener.AbortCommandHandler.AbortError;
+import com.github.mgrouse.shopbot.listener.CommandHandler.AppError;
 
 
 public class AbortCommandTest
@@ -21,7 +21,7 @@ public class AbortCommandTest
     AbortCommandTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
     }
 
     @BeforeEach
@@ -38,9 +38,9 @@ public class AbortCommandTest
 
 	AbortCommandHandler aHandler = new AbortCommandHandler(dBase);
 
-	AbortError err = aHandler.performAbort("Michael");
+	AppError err = aHandler.performAbort("Michael");
 
-	assertEquals(AbortError.NO_PLAYER, err, " No Player");
+	assertEquals(AppError.NO_PLAYER, err, " No Player");
     }
 
     @Test
@@ -50,6 +50,8 @@ public class AbortCommandTest
 	Player p = new Player();
 	p.setDiscordName("Michael");
 	p.setCurrCharDNDB_Id("");
+	p.setCash(new BigDecimal("20.00"));
+	p.setBill(new BigDecimal("10.00"));
 
 	dBase.createPlayer(p);
 
@@ -57,9 +59,9 @@ public class AbortCommandTest
 
 	AbortCommandHandler aHandler = new AbortCommandHandler(dBase);
 
-	AbortError err = aHandler.performAbort("Michael");
+	AppError err = aHandler.performAbort("Michael");
 
-	assertEquals(AbortError.NO_ACT_PC, err, " No PC");
+	assertEquals(AppError.NONE, err, " No PC");
     }
 
 
@@ -89,9 +91,9 @@ public class AbortCommandTest
 	// test
 	AbortCommandHandler aHandler = new AbortCommandHandler(dBase);
 
-	AbortError err = aHandler.performAbort("Michael");
+	AppError err = aHandler.performAbort("Michael");
 
-	assertEquals(AbortError.NO_TRANSACTION, err, " No PC");
+	assertEquals(AppError.GOLD_NO_BILL, err, " No PC");
     }
 
 
@@ -124,9 +126,9 @@ public class AbortCommandTest
 	// test
 	AbortCommandHandler aHandler = new AbortCommandHandler(dBase);
 
-	AbortError err = aHandler.performAbort("Michael");
+	AppError err = aHandler.performAbort("Michael");
 
-	assertEquals(AbortError.NONE, err, " No PC");
+	assertEquals(AppError.NONE, err, " No PC");
 
 	// get the player
 	p = dBase.readPlayer("Michael");

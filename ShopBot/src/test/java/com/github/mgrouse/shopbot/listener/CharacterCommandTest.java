@@ -10,7 +10,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
-import com.github.mgrouse.shopbot.listener.CharacterCommandHandler.CharError;
+import com.github.mgrouse.shopbot.listener.CommandHandler.AppError;
 
 
 public class CharacterCommandTest
@@ -20,7 +20,7 @@ public class CharacterCommandTest
     CharacterCommandTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
     }
 
     @BeforeEach
@@ -38,9 +38,9 @@ public class CharacterCommandTest
 	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
-	CharError err = handler.performChar("Michael", "Corvus");
+	AppError err = handler.performChar("Michael", "Corvus");
 
-	assertEquals(CharError.NO_USER, err, "performChar");
+	assertEquals(AppError.NO_PLAYER, err, "performChar");
     }
 
     @Test
@@ -59,9 +59,9 @@ public class CharacterCommandTest
 	// performChar(String playerName, String pcName)
 	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
 
-	CharError err = handler.performChar("Michael", "Corvus");
+	AppError err = handler.performChar("Michael", "Corvus");
 
-	assertEquals(CharError.NO_PC, err, "performChar");
+	assertEquals(AppError.NO_PC, err, "performChar");
 
 	// read Player
 	player = dBase.readPlayer("Michael");
@@ -106,9 +106,9 @@ public class CharacterCommandTest
 	CharacterCommandHandler handler = new CharacterCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
-	CharError err = handler.performChar(player.getDiscordName(), pc.getName());
+	AppError err = handler.performChar(player.getDiscordName(), pc.getName());
 
-	assertEquals(CharError.NONE, err, "performChar");
+	assertEquals(AppError.NONE, err, "performChar");
 
 	// read and assert Player
 	player = dBase.readPlayer("Michael");

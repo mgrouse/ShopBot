@@ -11,7 +11,7 @@ import com.github.mgrouse.shopbot.database.DataBaseTools;
 import com.github.mgrouse.shopbot.database.DataBaseTools.DBASE;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
-import com.github.mgrouse.shopbot.listener.GoldCommandHandler.GoldError;
+import com.github.mgrouse.shopbot.listener.CommandHandler.AppError;
 
 
 public class GoldCommandTest
@@ -25,7 +25,7 @@ public class GoldCommandTest
     GoldCommandTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
 
 	// Place Items in DB
     }
@@ -44,9 +44,9 @@ public class GoldCommandTest
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
 	// Did not set up player
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.SHOPPING_ERR, err, "performBuy");
+	assertEquals(AppError.NO_PLAYER, err, "performBuy");
     }
 
     @Test
@@ -62,9 +62,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.SHOPPING_ERR, err, "performBuy");
+	assertEquals(AppError.ACT_PC_NOT_SET, err, "performBuy");
     }
 
     @Test
@@ -81,9 +81,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.SHOPPING_ERR, err, "performBuy");
+	assertEquals(AppError.ACT_PC_DBASE_404, err, "performBuy");
     }
 
     @Test
@@ -106,9 +106,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.SHOPPING_ERR, err, "performBuy");
+	assertEquals(AppError.ACT_PC_DNDB_404, err, "performBuy");
     }
 
     @Test
@@ -133,9 +133,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.NO_BILL, err, "performBuy");
+	assertEquals(AppError.GOLD_NO_BILL, err, "performBuy");
     }
 
     @Test
@@ -161,9 +161,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.NO_CASH, err, "performBuy");
+	assertEquals(AppError.GOLD_NO_CASH, err, "performBuy");
     }
 
     @Test
@@ -193,9 +193,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.UNDER_PAYMENT, err, "performBuy");
+	assertEquals(AppError.GOLD_UNDER_PAYED, err, "performBuy");
     }
 
     @Test
@@ -225,9 +225,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.OVER_PAYMENT, err, "performBuy");
+	assertEquals(AppError.GOLD_OVER_PAYED, err, "performBuy");
     }
 
     @Test
@@ -257,9 +257,9 @@ public class GoldCommandTest
 
 	GoldCommandHandler handler = new GoldCommandHandler(dBase);
 
-	GoldError err = handler.perform("Michael");
+	AppError err = handler.perform("Michael");
 
-	assertEquals(GoldError.NONE, err, "performBuy");
+	assertEquals(AppError.NONE, err, "performBuy");
     }
 
 }
