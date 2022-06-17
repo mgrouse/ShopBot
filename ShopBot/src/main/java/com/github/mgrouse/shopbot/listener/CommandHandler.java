@@ -6,8 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
+import com.github.mgrouse.shopbot.database.Item;
+import com.github.mgrouse.shopbot.database.Lot;
 import com.github.mgrouse.shopbot.database.Player;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
+import com.github.mgrouse.shopbot.net.Inventory;
 import com.github.mgrouse.shopbot.net.NetTools;
 
 
@@ -23,6 +26,8 @@ public class CommandHandler
 
     protected PlayerCharacter m_pc = null;
 
+    protected Lot m_lot = null;
+
 
     public enum AppError
     {
@@ -34,13 +39,14 @@ public class CommandHandler
 	ACT_PC_DNDB_404("Your active character cannot be found on DND Beyond."),
 	ACT_PC_DBASE_404("Error: You seem to have an active PC: <DNDB_NUM> registered but not found in Data Base."),
 	IN_TRANSACTION("You cannot switch PCs in the middle of a transaction"),
-	BUY_NO_AMT("You cannot buy 0 of something."), //
-	BUY_UNKNOWN_ITEM("I do not know what a <ITEM_NAME> is."),
+	NO_SIZE("You cannot exchange 0 of something."), //
+	UNKNOWN_ITEM("I do not know what a <ITEM_NAME> is."),
 	BUY_INSUFFICIENT_FUNDS("Your total bill of: <BILL> gp. Is more than you have."),
 	GOLD_UNDER_PAYED("You did not pay your bill."),
 	GOLD_OVER_PAYED("This looks funny, you payed your bill, and then some."),
 	GOLD_NO_BILL("You don't seem to have a bill to pay."), //
-	GOLD_NO_CASH("You don't seem to have a cash record.");
+	GOLD_NO_CASH("You don't seem to have a cash record."),
+	SELL_NOT_OWNED("You do not seem to own enough <ITEM_NAME>.");
 
 	private String m_message = "";
 
@@ -152,4 +158,76 @@ public class CommandHandler
 
 	return AppError.NONE;
     }
+
+
+    protected AppError validatePlayerActivePcOwnsLot(String playerName, Lot lot)
+    {
+	// validate an fill ion lot
+	AppError err = validateLot(lot);
+
+	if (err != AppError.NONE)
+	{
+	    return err;
+	}
+
+	// validate the player and ActPC exist in DB and DNDB
+	err = validatePlayerAndActivePC(playerName);
+
+	if (err != AppError.NONE)
+	{
+	    return err;
+	}
+
+	// validate ActPC Owns Lot
+	return validateActivePcOwnsLot(m_player, lot);
+    }
+
+
+    protected AppError validateActivePcOwnsLot(Player player, Lot lot)
+    {
+	Inventory inv = NetTools.getDndbInventory(player.getCurrCharDNDB_Id());
+
+	Boolean hasIt = inv.hasLot(lot);
+
+	if (false == hasIt)
+	{
+	    return AppError.SELL_NOT_OWNED;
+	}
+
+	lot.setPlayerId(player.getId());
+	m_lot = lot;
+
+	return AppError.NONE;
+    }
+
+
+    protected AppError validateActivePcAffordLot(String playerName, Lot lot)
+    {
+	return AppError.NONE;
+    }
+
+    protected AppError validateLot(Lot lot)
+    {
+	// validate Lot - amt and Item
+	if (lot.getSize() < 1)
+	{
+	    return AppError.NO_SIZE;
+	}
+
+	// look up item(s) -- pass in List of names
+	// get back list of Items.
+	Item tempItem = m_dBase.readItem(lot.getName());
+
+	if (null == tempItem)
+	{
+	    return AppError.UNKNOWN_ITEM;
+	}
+
+	lot.setItemId(tempItem.getId());
+	lot.setItem(tempItem);
+
+	return AppError.NONE;
+    }
+
+
 }

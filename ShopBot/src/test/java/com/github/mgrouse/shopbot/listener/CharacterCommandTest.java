@@ -68,7 +68,7 @@ public class CharacterCommandTest
 
 	// Assert
 	assertNotNull(player, "createPlayer");
-	assertEquals(1, player.getID(), "Player1 Id ");
+	assertEquals(1, player.getId(), "Player1 Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
 	assertEquals("", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
     }
@@ -114,7 +114,7 @@ public class CharacterCommandTest
 	player = dBase.readPlayer("Michael");
 
 	assertNotNull(player, "createPlayer");
-	assertEquals(1, player.getID(), "Player1 Id ");
+	assertEquals(1, player.getId(), "Player1 Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 

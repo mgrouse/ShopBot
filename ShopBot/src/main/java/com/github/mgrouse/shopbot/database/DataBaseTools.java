@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.Secret;
+import com.github.mgrouse.shopbot.database.Lot.TransactionType;
 
 
 //Table Player
@@ -22,13 +23,13 @@ import com.github.mgrouse.shopbot.Secret;
 //                     |
 //Table PC            \|/
 // ID, PLAYER_ID, DNDB_NUM, NAME, AVATAR_URL
-
+//
 //Table Item
 // ID, Name, Category, Buy_AMT, Sell_AMT    AMTs are  java.math.BigDecimal
-
-//1 short sword /r
-//2 potions/r
-//Player p = (player instanceof Player ? (Player) player : null);
+//
+//Table Lot
+// ID, PLAYER_ID, Item_ID, SIZE, NUM_OWNED, NAME, VALUE, IS_PURCHASE
+//
 
 
 public class DataBaseTools
@@ -208,7 +209,7 @@ public class DataBaseTools
 		{
 		    player = new Player();
 
-		    player.setID(rs.getInt("ID"));
+		    player.setId(rs.getInt("ID"));
 		    player.setCurrCharDNDB_Id(rs.getString("CURR_CHAR_DNDB_NUM"));
 		    player.setDiscordName(rs.getString("DISCORD_NAME"));
 		    player.setCash(new BigDecimal(rs.getString("CASH")));
@@ -239,7 +240,7 @@ public class DataBaseTools
 	    ps.setString(2, player.getDiscordName());
 	    ps.setString(3, player.getCash().toString());
 	    ps.setString(4, player.getBill().toString());
-	    ps.setInt(5, player.getID());
+	    ps.setInt(5, player.getId());
 
 	    int rows = ps.executeUpdate();
 
@@ -262,7 +263,7 @@ public class DataBaseTools
 	try
 	{
 	    PreparedStatement ps = m_connection.prepareStatement(query);
-	    ps.setInt(1, player.getID());
+	    ps.setInt(1, player.getId());
 	    ps.executeUpdate();
 	}
 	catch (SQLException e)
@@ -296,7 +297,7 @@ public class DataBaseTools
 
     public void associatePlayerAndPC(@Nonnull Player player, @Nonnull PlayerCharacter pc)
     {
-	pc.setPlayerId(player.getID());
+	pc.setPlayerId(player.getId());
     }
 
 
@@ -315,7 +316,7 @@ public class DataBaseTools
 	    {
 		PreparedStatement ps = m_connection.prepareStatement(query);
 
-		ps.setInt(1, player.getID());
+		ps.setInt(1, player.getId());
 		ps.setString(2, dndb_Num);
 
 		ResultSet rs = ps.executeQuery();
@@ -371,7 +372,7 @@ public class DataBaseTools
 	return retVal;
     }
 
-    // TODO test this
+
     public PlayerCharacter getPlayersActivePc(@Nonnull String name)
     {
 	PlayerCharacter pc = null;
@@ -403,7 +404,7 @@ public class DataBaseTools
 		String query = "select * from PC where PLAYER_ID = ?";
 		PreparedStatement ps = m_connection.prepareStatement(query);
 
-		ps.setInt(1, player.getID());
+		ps.setInt(1, player.getId());
 
 		ResultSet rs = ps.executeQuery();
 
@@ -577,6 +578,263 @@ public class DataBaseTools
 	}
     }
 
+    // Lot ==================================
+
+    public Lot createLot(Lot lot)
+    {
+	// ID, PLAYER_ID, Item_ID, NAME, SIZE, NUM_OWNED, VALUE, IS_PURCHASE
+	String query = "insert into LOT(PLAYER_ID, ITEM_ID, SIZE, NUM_OWNED, NAME, VALUE, TYPE)"
+		+ " VALUES (?, ?, ?, ?, ?, ?, ?) ";
+
+	PreparedStatement ps;
+
+	try
+	{
+	    ps = m_connection.prepareStatement(query);
+
+	    ps.setInt(1, lot.getPlayerId());
+	    ps.setInt(2, lot.getItemId());
+	    ps.setInt(3, lot.getSize());
+	    ps.setInt(4, lot.getNumOwned());
+	    ps.setString(5, lot.getName());
+	    ps.setString(6, lot.getValue().toString());
+	    ps.setString(7, lot.getType().toString());
+
+	    int n = ps.executeUpdate();
+
+	    if (1 == n)
+	    {
+		lot = readLastLot();
+	    }
+
+	} // try
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return lot;
+    }
+
+    public Boolean updateLot(Lot lot)
+    {
+	Boolean retVal = false;
+
+	// DNDB_NUM, CHAR_NAME, AVATAR_URL
+	String query = "update LOT set SIZE=?, NUM_OWNED=?, NAME=?, VALUE=?, TYPE=? where ID=?";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setInt(1, lot.getSize());
+	    ps.setInt(2, lot.getNumOwned());
+	    ps.setString(3, lot.getName());
+	    ps.setString(4, lot.getValue().toString());
+	    ps.setString(5, lot.getType().toString());
+	    ps.setInt(6, lot.getId());
+
+	    int rows = ps.executeUpdate();
+
+	    if (rows > 0)
+	    {
+		retVal = true;
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
+    }
+
+
+    public Lot readLot(Integer id)
+    {
+	Lot l = null;
+
+	String query = "select * from LOT where ID=?";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setInt(1, id);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		l = new Lot();
+
+		// ID, PLAYER_ID, ITEM_ID, SIZE, NUM_OWNED, NAME, VALUE, TYPE
+
+		l.setId(rs.getInt("ID"));
+		l.setPlayerId(rs.getInt("PLAYER_ID"));
+		l.setItemId(rs.getInt("ITEM_ID"));
+		l.setSize(rs.getInt("SIZE"));
+		l.setNumOwned(rs.getInt("NUM_OWNED"));
+
+		// l.setName(rs.getString("NAME"));
+		// l.setValue(rs.getString("VALUE"));
+
+		l.setType(TransactionType.valueOf(rs.getString("TYPE")));
+
+		// read and install item
+		l.setItem(readItem(rs.getInt("ITEM_ID")));
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return l;
+    }
+
+
+    public Lot readLastLot()
+    {
+	Lot l = null;
+
+	String query = "select MAX(ID) from LOT";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		l = readLot(rs.getInt("MAX(ID)"));
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return l;
+    }
+
+
+    public Boolean destroyLot(Lot lot)
+    {
+	Boolean retVal = false;
+
+	String query = "delete from LOT where ID =?";
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setInt(1, lot.getId());
+
+	    int rows = ps.executeUpdate();
+	    if (rows > 0)
+	    {
+		retVal = true;
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
+
+    }
+
+    public Boolean deleteAllLots()
+    {
+	try
+	{
+	    String query = "delete from LOT";
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+	    ps.executeUpdate();
+
+	    query = "ALTER TABLE LOT AUTO_INCREMENT = 1";
+	    ps = m_connection.prepareStatement(query);
+	    ps.executeUpdate();
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return true;
+    }
+
+//    public Boolean fillOutLot(Lot lot)
+//    {
+//	if ((lot.getSize() < 1) || (lot.getName().contentEquals("")) || (lot.getName() == null))
+//	{
+//	    return false;
+//	}
+//
+//	Item temp = readItem(lot.getName());
+//
+//	if (null == temp)
+//	{
+//	    return false;
+//	}
+//
+//	lot.setItemId(temp.getId());
+//	lot.setItem(temp);
+//
+//	return true;
+//    }
+
+    public List<Lot> getLotsByPlayer(String name)
+    {
+	List<Lot> lots = new ArrayList<Lot>();
+
+	Player player = readPlayer(name);
+
+	if (null != player)
+	{
+	    try
+	    {
+		String query = "select * from LOT where PLAYER_ID = ?";
+		PreparedStatement ps = m_connection.prepareStatement(query);
+
+		ps.setInt(1, player.getId());
+
+		ResultSet rs = ps.executeQuery();
+
+		Lot l = null;
+
+		while (rs.next())
+		{
+		    // ID, PLAYER_ID, ITEM_ID, SIZE, NUM_OWNED, NAME, VALUE, TYPE
+		    l = new Lot();
+
+		    l.setId(rs.getInt("ID"));
+		    l.setPlayerId(rs.getInt("PLAYER_ID"));
+		    l.setItemId(rs.getInt("ITEM_ID"));
+		    l.setSize(rs.getInt("SIZE"));
+		    l.setNumOwned(rs.getInt("NUM_OWNED"));
+
+		    // l.setName(rs.getString("NAME"));
+		    // l.setValue(rs.getString("VALUE"));
+
+		    l.setType(TransactionType.valueOf(rs.getString("TYPE")));
+
+		    l.setItem(readItem(rs.getInt("ITEM_ID")));
+
+		    lots.add(l);
+		}
+	    }
+	    catch (SQLException e)
+	    {
+		e.printStackTrace();
+	    }
+
+	} // if player
+
+	return lots;
+    }
 
     // Item ================================
 
@@ -600,7 +858,7 @@ public class DataBaseTools
 		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
 		temp = new Item();
 
-		temp.setID(rs.getInt("ID"));
+		temp.setId(rs.getInt("ID"));
 		temp.setName(rs.getString("NAME"));
 		temp.setCategory(rs.getString("CATEGORY"));
 		temp.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
@@ -668,7 +926,7 @@ public class DataBaseTools
 		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
 		temp = new Item();
 
-		temp.setID(rs.getInt("ID"));
+		temp.setId(rs.getInt("ID"));
 		temp.setName(rs.getString("NAME"));
 		temp.setCategory(rs.getString("CATEGORY"));
 		temp.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
@@ -737,6 +995,41 @@ public class DataBaseTools
 	return retVal;
     }
 
+
+    public Item readItem(int id)
+    {
+	Item retVal = null;
+
+	String query = "select * from ITEM where ID=? ";
+
+	try
+	{
+	    PreparedStatement ps = m_connection.prepareStatement(query);
+
+	    ps.setInt(1, id);
+
+	    ResultSet rs = ps.executeQuery();
+
+	    if (rs.next())
+	    {
+		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
+		retVal = new Item();
+
+		retVal.setId(rs.getInt("ID"));
+		retVal.setName(rs.getString("NAME"));
+		retVal.setCategory(rs.getString("CATEGORY"));
+		retVal.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
+		retVal.setSellAmt(new BigDecimal(rs.getString("SELL_AMT")));
+	    }
+	}
+	catch (SQLException e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
+    }
+
     public Item readItem(String name)
     {
 	String query = "select * from ITEM where NAME like '%" + name + "%' ";
@@ -756,7 +1049,7 @@ public class DataBaseTools
 		// ID, NAME, CATEGORY, BUY_AMT, SELL_AMT
 		retVal = new Item();
 
-		retVal.setID(rs.getInt("ID"));
+		retVal.setId(rs.getInt("ID"));
 		retVal.setName(rs.getString("NAME"));
 		retVal.setCategory(rs.getString("CATEGORY"));
 		retVal.setBuyAmt(new BigDecimal(rs.getString("BUY_AMT")));
@@ -787,7 +1080,7 @@ public class DataBaseTools
 	    ps.setString(3, item.getBuyAmt().toString());
 	    ps.setString(4, item.getSellAmt().toString());
 
-	    ps.setInt(5, item.getID());
+	    ps.setInt(5, item.getId());
 
 	    int rows = ps.executeUpdate();
 
@@ -813,7 +1106,7 @@ public class DataBaseTools
 	{
 	    PreparedStatement ps = m_connection.prepareStatement(query);
 
-	    ps.setInt(1, item.getID());
+	    ps.setInt(1, item.getId());
 
 	    int rows = ps.executeUpdate();
 

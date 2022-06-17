@@ -22,7 +22,7 @@ public class ItemReaderTest
     ItemReaderTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
     }
 
     @BeforeEach
@@ -52,7 +52,7 @@ public class ItemReaderTest
 	    Item item = dBase.readItem("Shortsword");
 
 	    assertNotNull(item, "Read an Item ");
-	    assertEquals(1, item.getID(), "Item ID ");
+	    assertEquals(1, item.getId(), "Item ID ");
 	    assertEquals("Shortsword", item.getName(), "Item Name ");
 	    assertEquals("Weapons", item.getCategory(), "Item Category ");
 	    assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
@@ -61,7 +61,7 @@ public class ItemReaderTest
 
 	    item = dBase.readItem("Studded");
 	    assertNotNull(item, "Read an Item ");
-	    assertEquals(2, item.getID(), "Item ID ");
+	    assertEquals(2, item.getId(), "Item ID ");
 	    assertEquals("Studded Leather", item.getName(), "Item Name ");
 	    assertEquals("Armor", item.getCategory(), "Item Category ");
 	    assertEquals("25.00", item.getBuyAmt().toString(), "Item BuyAmt ");
@@ -70,7 +70,7 @@ public class ItemReaderTest
 
 	    item = dBase.readItem("Arrows");
 	    assertNotNull(item, "Read an Item ");
-	    assertEquals(3, item.getID(), "Item ID ");
+	    assertEquals(3, item.getId(), "Item ID ");
 	    assertEquals("Arrows 20", item.getName(), "Item Name ");
 	    assertEquals("Ammo", item.getCategory(), "Item Category ");
 	    assertEquals("2.00", item.getBuyAmt().toString(), "Item BuyAmt ");

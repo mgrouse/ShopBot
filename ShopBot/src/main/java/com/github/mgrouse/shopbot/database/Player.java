@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 public class Player
 {
-    private Integer m_ID = 0;
+    private Integer m_Id = 0;
 
     private String m_dndb_Id = "";
 
@@ -22,14 +22,14 @@ public class Player
 
     // Having no access modifier, the following
     // 2 methods are package-private
-    public Integer getID()
+    public Integer getId()
     {
-	return m_ID;
+	return m_Id;
     }
 
-    public void setID(int id)
+    public void setId(int id)
     {
-	m_ID = id;
+	m_Id = id;
     }
 
 
@@ -104,7 +104,7 @@ public class Player
     @Override
     public String toString()
     {
-	return "Player [m_ID=" + m_ID + ", m_dndb_Id=" + m_dndb_Id + ", m_discordName=" + m_discordName + ", cash="
+	return "Player [m_ID=" + m_Id + ", m_dndb_Id=" + m_dndb_Id + ", m_discordName=" + m_discordName + ", cash="
 		+ cash + ", bill=" + bill + "]";
     }
 }

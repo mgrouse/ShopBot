@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public class Item implements Comparable<Item>
 {
 
-    private Integer m_ID = 0;
+    private Integer m_Id = 0;
 
     private String m_name = "";
 
@@ -22,16 +22,17 @@ public class Item implements Comparable<Item>
 
     }
 
-    // Having no access modifier, the following
-    // 2 methods are package-private
-    Integer getID()
+
+    public Integer getId()
     {
-	return m_ID;
+	return m_Id;
     }
 
-    void setID(int id)
+    // Having no access modifier, the following
+    // 2 methods are package-private
+    void setId(int id)
     {
-	m_ID = id;
+	m_Id = id;
     }
 
 

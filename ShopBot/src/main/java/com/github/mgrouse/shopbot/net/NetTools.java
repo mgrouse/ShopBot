@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -120,7 +121,7 @@ public class NetTools
 		JsonObject money = data.get("currencies").getAsJsonObject();
 
 		// convert money into Big Decimal
-		retVal = new MoneyPouch(money).asBigDDecimal();
+		retVal = new MoneyPouch(money).asBigDecimal();
 	    }
 
 	}
@@ -133,11 +134,37 @@ public class NetTools
     }
 
 
-    // JsonArray inventory = data.get("inventory").getAsJsonArray();
+    public static Inventory getDndbInventory(String dndbNum)
+    {
+	Inventory retVal = new Inventory();
 
-//    for (JsonElement item : inventory)
-//    {
-//	String itemName = item.getAsJsonObject().get("definition").getAsJsonObject().get("name").getAsString();
-//	System.out.println(itemName);
-//    }
+	try
+	{
+	    URL url = new URL(DnDBJsonCharacter + dndbNum);
+
+	    InputStreamReader isReader = new InputStreamReader(url.openStream());
+
+	    JsonElement root = JsonParser.parseReader(isReader);
+
+	    // May be an array, may be an object.
+	    JsonObject rootObj = root.getAsJsonObject();
+
+	    JsonObject data = rootObj.get("data").getAsJsonObject();
+
+	    if (null != data)
+	    {
+		JsonArray inventory = data.get("inventory").getAsJsonArray();
+
+		retVal.load(inventory);
+	    }
+
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+
+	return retVal;
+    }
 }
+

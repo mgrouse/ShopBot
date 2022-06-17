@@ -21,7 +21,7 @@ class DBaseTest
     DBaseTest()
     {
 	dBase = DataBaseTools.getInstance();
-	dBase.init(DBASE.TEST);
+	DataBaseTools.init(DBASE.TEST);
     }
 
     @BeforeEach
@@ -48,7 +48,7 @@ class DBaseTest
 	player1 = dBase.createPlayer(player1);
 
 	assertNotNull(player1, "createPlayer ");
-	assertEquals(1, player1.getID(), "Player1 Id ");
+	assertEquals(1, player1.getId(), "Player1 Id ");
 	assertEquals("Michael", player1.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals("0.00", player1.getCash().toString(), "Cash ");
@@ -61,7 +61,7 @@ class DBaseTest
 
 	player2 = dBase.readPlayer("Michael");
 	assertNotNull(player2, "readPlayer player2 ");
-	assertEquals(1, player2.getID(), "Player2 Id ");
+	assertEquals(1, player2.getId(), "Player2 Id ");
 	assertEquals("Michael", player2.getDiscordName(), "DiscordName ");
 	assertEquals("12345678", player2.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals("0.00", player1.getCash().toString(), "Cash ");
@@ -82,7 +82,7 @@ class DBaseTest
 	player1 = dBase.readPlayer("Grouse");
 
 	assertNotNull(player1, "createPlayer shouuld return an object ");
-	assertEquals(1, player1.getID(), "Player1 Id ");
+	assertEquals(1, player1.getId(), "Player1 Id ");
 	assertEquals("Grouse", player1.getDiscordName(), "DiscordName ");
 	assertEquals("87654321", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals("12.34", player1.getCash().toString(), "Cash ");
@@ -197,7 +197,7 @@ class DBaseTest
 	// read and check Player
 	player = dBase.readPlayer("Michael");
 	assertNotNull(player, "Read a Player ");
-	assertEquals(1, player.getID(), "Player Id ");
+	assertEquals(1, player.getId(), "Player Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
 	assertEquals("87654321", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
 
@@ -278,6 +278,44 @@ class DBaseTest
 
 	// assert
 	assertNull(pcRead, "Bad PC");
+
+    }
+
+    @Test
+    void testPlayersActivePc()
+    {
+	// Create and fill player
+	Player player = new Player();
+	player.setDiscordName("Michael");
+	player.setCurrCharDNDB_Id("");
+
+	player = dBase.createPlayer(player);
+
+	// getActPC should return null as we have not put one in yet
+	PlayerCharacter active = dBase.getPlayersActivePc("Michael");
+	assertNull(active, "No active PC");
+
+	// Create and fill character
+	PlayerCharacter pc = new PlayerCharacter();
+	pc.setName("Corvus");
+	pc.setDNDB_Num("87654321");
+	pc.setAvatarURL("https://www.someone.com/pics/mage.png");
+
+	pc = dBase.createCharacter(pc);
+
+	// modify player
+	player.setCurrCharDNDB_Id("87654321");
+
+	// associate them
+	dBase.associatePlayerAndPC(player, pc);
+
+	// update them
+	dBase.updatePlayer(player);
+	dBase.updateCharacter(pc);
+
+	// getActPC should return active PC as we put one in
+	active = dBase.getPlayersActivePc("Michael");
+	assertNotNull(active, "Active PC");
 
     }
 
@@ -365,7 +403,7 @@ class DBaseTest
 	item = dBase.createItem(item);
 
 	assertNotNull(item, "Create a Item ");
-	assertEquals(1, item.getID(), "Item ID ");
+	assertEquals(1, item.getId(), "Item ID ");
 	assertEquals("Shortsword", item.getName(), "Item Name ");
 	assertEquals("Weapon", item.getCategory(), "Item Category ");
 	assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
@@ -376,7 +414,7 @@ class DBaseTest
 
 	// Assert
 	assertNotNull(item, "Read an Item ");
-	assertEquals(1, item.getID(), "Item ID ");
+	assertEquals(1, item.getId(), "Item ID ");
 	assertEquals("Shortsword", item.getName(), "Item Name ");
 	assertEquals("Weapon", item.getCategory(), "Item Category ");
 	assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
@@ -397,7 +435,7 @@ class DBaseTest
 
 	// Assert
 	assertNotNull(item, "Read a Item ");
-	assertEquals(1, item.getID(), "Item ID ");
+	assertEquals(1, item.getId(), "Item ID ");
 	assertEquals("Short sword", item.getName(), "Item Name ");
 	assertEquals("Light Weapon", item.getCategory(), "Item Category ");
 	assertEquals("11.20", item.getBuyAmt().toString(), "Item BuyAmt ");
@@ -414,7 +452,7 @@ class DBaseTest
 	assertNull(temp, "Read a missing Item ");
 
 	// test delete all
-	item.setID(0);
+	item.setId(0);
 	item = dBase.createItem(item);
 
 	// Delete All
@@ -467,7 +505,7 @@ class DBaseTest
 	Item temp = items.get(0);
 
 	assertNotNull(temp, "Get[0] Item ");
-	assertEquals(3, temp.getID(), "Item ID ");
+	assertEquals(3, temp.getId(), "Item ID ");
 	assertEquals("Arrows 20", temp.getName(), "Item Name ");
 	assertEquals("Ammo", temp.getCategory(), "Item Category ");
 	assertEquals("2.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
@@ -477,7 +515,7 @@ class DBaseTest
 	temp = items.get(1);
 
 	assertNotNull(temp, "Get[1] Item ");
-	assertEquals(1, temp.getID(), "Item ID ");
+	assertEquals(1, temp.getId(), "Item ID ");
 	assertEquals("Shortsword", temp.getName(), "Item Name ");
 	assertEquals("Weapons", temp.getCategory(), "Item Category ");
 	assertEquals("10.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
@@ -487,7 +525,7 @@ class DBaseTest
 	temp = items.get(2);
 
 	assertNotNull(temp, "Get[2] Item ");
-	assertEquals(2, temp.getID(), "Item ID ");
+	assertEquals(2, temp.getId(), "Item ID ");
 	assertEquals("Studded Leather", temp.getName(), "Item Name ");
 	assertEquals("Armor", temp.getCategory(), "Item Category ");
 	assertEquals("25.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
@@ -585,11 +623,12 @@ class DBaseTest
 
 	Item temp = items.get(0);
 
-	assertEquals(3, temp.getID(), "Item ID ");
+	assertEquals(3, temp.getId(), "Item ID ");
 	assertEquals("Arrows 20", temp.getName(), "Item Name ");
 	assertEquals("Ammo", temp.getCategory(), "Item Category ");
 	assertEquals("2.00", temp.getBuyAmt().toString(), "Item BuyAmt ");
 	assertEquals("1.00", temp.getSellAmt().toString(), "Item SellAmt ");
-
     }
+
+
 }

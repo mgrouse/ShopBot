@@ -46,14 +46,34 @@ public class BuyCommandHandler extends CommandHandler
 	// get User's Discord Name (Not the Koni nick Name)
 	String userName = m_event.getUser().getName();
 
-	// get the parameters from command line for now
-	Integer amt = m_event.getOption("amt").getAsInt();
+//	// ArrayList of Lot
+//	ArrayList<Lot> lots = new ArrayList<>();
+//
+//	// get the parameters from command line for now
+//	Lot lot = null;
+//	for (Integer i = 1; i <= 5; i++)
+//	{
+//	    lot = new Lot();
+//	    lot.amt = m_event.getOption("amt" + i.toString()).getAsInt();
+//
+//	    lot.name = m_event.getOption("name" + i.toString()).getAsString();
+//
+//	    lots.add(lot);
+//	}
 
-	String itemName = m_event.getOption("item").getAsString();
+	// req'd
+	Integer amt1 = m_event.getOption("amt1").getAsInt();
 
-	// Check non-req args are in pairs
+	String itemName1 = m_event.getOption("item1").getAsString();
 
-	perform(userName, amt, itemName);
+	// ===
+	// not req'd may be missing
+	Integer amt2 = m_event.getOption("amt2").getAsInt();
+
+	String itemName2 = m_event.getOption("item2").getAsString();
+
+
+	perform(userName, amt1, itemName1);
     }
 
     // package level for testing
@@ -100,7 +120,7 @@ public class BuyCommandHandler extends CommandHandler
     {
 	if (amt < 1)
 	{
-	    return AppError.BUY_NO_AMT;
+	    return AppError.NO_SIZE;
 	}
 
 	// look up item(s) -- pass in List of names
@@ -109,7 +129,7 @@ public class BuyCommandHandler extends CommandHandler
 
 	if (null == m_item)
 	{
-	    return AppError.BUY_UNKNOWN_ITEM;
+	    return AppError.UNKNOWN_ITEM;
 	}
 
 	// get user and PC if any and make sure they are still there

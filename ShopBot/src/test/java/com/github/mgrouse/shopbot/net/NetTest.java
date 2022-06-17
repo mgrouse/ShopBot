@@ -1,12 +1,16 @@
 package com.github.mgrouse.shopbot.net;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.mgrouse.shopbot.database.Lot;
+import com.github.mgrouse.shopbot.database.Lot.TransactionType;
 import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 
@@ -40,6 +44,39 @@ public class NetTest
 	BigDecimal gold = NetTools.getDndbCurrency(DRUID_DNDB_NUM);
 
 	assertNotNull(gold);
-	assertEquals("11.61", gold.toString(), " Gobo's Gold");
+	assertEquals("26.61", gold.toString(), " Gobo's Gold");
+    }
+
+    @Test
+    void getDndbInventoryHasItTest()
+    {
+	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
+
+	Lot oneScimitar = new Lot(1, "Scimitar", TransactionType.PURCHASE);
+	Boolean hasScimitar = i.hasLot(oneScimitar);
+
+	assertTrue(hasScimitar, "Has a Scimitar");
+    }
+
+    @Test
+    void getDndbInventoryHasOneTest()
+    {
+	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
+
+	Lot twoScimitar = new Lot(2, "Scimitar", TransactionType.PURCHASE);
+	Boolean hasScimitars = i.hasLot(twoScimitar);
+
+	assertFalse(hasScimitars, "Has two Scimitars");
+    }
+
+    @Test
+    void getDndbInventoryDoesNotHaveItTest()
+    {
+	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
+
+	Lot oneMace = new Lot(1, "Mace", TransactionType.PURCHASE);
+	Boolean hasMace = i.hasLot(oneMace);
+
+	assertFalse(hasMace, "Has no Mace");
     }
 }

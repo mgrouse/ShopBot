@@ -48,7 +48,7 @@ public class BuyCommandTest
 
 	Item item2 = new Item();
 
-	item2.setName("Leather Armor");
+	item2.setName("Leather");
 	item2.setCategory("Armor");
 	item2.setBuyAmt("25.00");
 	item2.setSellAmt("5.00");
@@ -64,12 +64,12 @@ public class BuyCommandTest
 	// 0 items
 	AppError err = handler.perform("Michael", 0, "Shortsword");
 
-	assertEquals(AppError.BUY_NO_AMT, err, "performBuy");
+	assertEquals(AppError.NO_SIZE, err, "performBuy");
 
 	// bad item name
 	err = handler.perform("Michael", 1, "XYZ");
 
-	assertEquals(AppError.BUY_UNKNOWN_ITEM, err, "performBuy");
+	assertEquals(AppError.UNKNOWN_ITEM, err, "performBuy");
     }
 
     @Test
@@ -167,7 +167,7 @@ public class BuyCommandTest
 	BuyCommandHandler handler = new BuyCommandHandler(dBase);
 
 	// performChar(String playerName, String pcName)
-	AppError err = handler.perform("Michael", 1, "Leather Armor");
+	AppError err = handler.perform("Michael", 1, "Leather");
 
 	assertEquals(AppError.BUY_INSUFFICIENT_FUNDS, err, "performBuy");
     }
@@ -196,5 +196,13 @@ public class BuyCommandTest
 	AppError err = handler.perform("Michael", 1, "Shortsword");
 
 	assertEquals(AppError.NONE, err, "performBuy");
+
+	// look for the Cash/Bill that we expect
+	player = dBase.readPlayer("Michael");
+
+	assertEquals("20.00", player.getCash().toString(), "Cash");
+	assertEquals("10.00", player.getBill().toString(), "Bill");
+
+	// next version, look for Lot(s)
     }
 }

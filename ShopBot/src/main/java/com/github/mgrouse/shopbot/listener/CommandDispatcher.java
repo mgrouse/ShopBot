@@ -88,6 +88,41 @@ public class CommandDispatcher extends ListenerAdapter
 		}
 		break;
 	    }
+	    case "sell":
+	    {
+
+		// if we are on the correct channel
+		if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
+		{
+		    SellCommandHandler sellHandler = new SellCommandHandler(m_dBase);
+		    sellHandler.go(event);
+		}
+		else
+		{
+		    event.getHook()
+			    .sendMessage("You must be on the #shop-purchases channel to interract with the ShopBot.")
+			    .queue();
+		}
+		break;
+
+	    }
+	    case "item":
+	    {
+		// if we are on the correct channel
+		if (event.getChannel().getName().contentEquals(Secret.SHOP_CHANNEL))
+		{
+		    ItemCommandHandler itemHandler = new ItemCommandHandler(m_dBase);
+		    itemHandler.go(event);
+		}
+		else
+		{
+		    event.getHook()
+			    .sendMessage("You must be on the #shop-purchases channel to interract with the ShopBot.")
+			    .queue();
+		}
+		break;
+
+	    }
 	    default:
 	    {
 		m_logger.info("Unknown Slash Command. CommandHandler.java");

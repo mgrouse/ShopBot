@@ -205,12 +205,12 @@ public class GoldCommandTest
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
-	player.setCash(new BigDecimal("20.00"));
+	player.setCash(new BigDecimal("30.00"));
 	player.setBill(new BigDecimal("8.00"));
 	// =======================================
-	// According to DB Gobo should have 12
+	// According to DB Gobo should have 22
 
-	// Gobo has 10.00 in pocket, looks like he over payed.
+	// Gobo has 20.00 in pocket, looks like he over payed.
 
 	dBase.createPlayer(player);
 
@@ -237,12 +237,12 @@ public class GoldCommandTest
 	Player player = new Player();
 	player.setDiscordName("Michael");
 	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
-	player.setCash(new BigDecimal("20.00"));
+	player.setCash(new BigDecimal("30.00"));
 	player.setBill(new BigDecimal("10.00"));
 	// ========
-	// 10.00
+	// 20.00
 
-	// Gobo has 10.00 in pocket
+	// Gobo has 20.00 in pocket
 
 	dBase.createPlayer(player);
 

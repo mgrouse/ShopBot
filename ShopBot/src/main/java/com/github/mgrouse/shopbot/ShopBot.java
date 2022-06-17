@@ -45,7 +45,7 @@ public class ShopBot implements EventListener
 
 	bot.init();
 
-	// app.cleanUp();
+
     }
 
 
@@ -138,11 +138,20 @@ public class ShopBot implements EventListener
 
 	// Buy
 	data = Commands.slash("buy", "Makes a purchase for the active PC.");
-	opts = new OptionData(OptionType.INTEGER, "amt", "The number of Items to buy.");
+
+	opts = new OptionData(OptionType.INTEGER, "amt1", "The number of first Item to buy.");
 	opts.setRequired(true);
 	data.addOptions(opts);
 
-	opts = new OptionData(OptionType.STRING, "item", "The item to buy.");
+	opts = new OptionData(OptionType.STRING, "item1", "The first item to buy.");
+	opts.setRequired(true);
+	data.addOptions(opts);
+
+	opts = new OptionData(OptionType.INTEGER, "amt2", "The number of second Item to buy.");
+	opts.setRequired(true);
+	data.addOptions(opts);
+
+	opts = new OptionData(OptionType.STRING, "item2", "The second item to buy.");
 	opts.setRequired(true);
 	data.addOptions(opts);
 
@@ -151,6 +160,19 @@ public class ShopBot implements EventListener
 	// Gold
 	data = Commands.slash("gold", "Tells ShopBot that you have deducted the gold from your D&DB sheet.");
 	slashCmds.add(data);
+
+	// Sell
+//	data = Commands.slash("sell", "Sells items in the active PC's inventory.");
+//
+//	opts = new OptionData(OptionType.INTEGER, "amt1", "The number of first Item to sell.");
+//	opts.setRequired(true);
+//	data.addOptions(opts);
+//
+//	opts = new OptionData(OptionType.STRING, "item1", "The first item to sell.");
+//	opts.setRequired(true);
+//	data.addOptions(opts);
+//
+//	slashCmds.add(data);
 
 	// add the commands
 	CommandListUpdateAction action = jda.updateCommands();

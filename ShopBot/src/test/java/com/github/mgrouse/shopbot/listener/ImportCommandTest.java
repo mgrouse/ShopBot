@@ -56,7 +56,7 @@ public class ImportCommandTest
 	Player p = dBase.readPlayer("GoldenScarab");
 
 	assertNotNull(p);
-	assertEquals(1, p.getID());
+	assertEquals(1, p.getId());
 	assertEquals("", p.getCurrCharDNDB_Id());
 
 
@@ -91,7 +91,7 @@ public class ImportCommandTest
 	p = dBase.readPlayer("GoldenScarab");
 
 	assertNotNull(p);
-	assertEquals(1, p.getID());
+	assertEquals(1, p.getId());
 	assertEquals("", p.getCurrCharDNDB_Id());
 
 

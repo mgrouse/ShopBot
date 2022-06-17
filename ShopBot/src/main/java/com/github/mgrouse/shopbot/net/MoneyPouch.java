@@ -58,7 +58,7 @@ class MoneyPouch
 
     }
 
-    public BigDecimal asBigDDecimal()
+    public BigDecimal asBigDecimal()
     {
 	return m_value;
     }
