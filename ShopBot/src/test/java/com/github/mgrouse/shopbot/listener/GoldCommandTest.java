@@ -26,8 +26,6 @@ public class GoldCommandTest
     {
 	dBase = DataBaseTools.getInstance();
 	DataBaseTools.init(DBASE.TEST);
-
-	// Place Items in DB
     }
 
     @BeforeEach
@@ -46,7 +44,7 @@ public class GoldCommandTest
 	// Did not set up player
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.NO_PLAYER, err, "performBuy");
+	assertEquals(AppError.NO_PLAYER, err, "performGold");
     }
 
     @Test
@@ -64,7 +62,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.ACT_PC_NOT_SET, err, "performBuy");
+	assertEquals(AppError.ACT_PC_NOT_SET, err, "performGold");
     }
 
     @Test
@@ -83,7 +81,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.ACT_PC_DBASE_404, err, "performBuy");
+	assertEquals(AppError.ACT_PC_DBASE_404, err, "performGold");
     }
 
     @Test
@@ -108,7 +106,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.ACT_PC_DNDB_404, err, "performBuy");
+	assertEquals(AppError.ACT_PC_DNDB_404, err, "performGold");
     }
 
     @Test
@@ -135,7 +133,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.GOLD_NO_BILL, err, "performBuy");
+	assertEquals(AppError.GOLD_NO_BILL, err, "performGold");
     }
 
     @Test
@@ -163,7 +161,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.GOLD_NO_CASH, err, "performBuy");
+	assertEquals(AppError.GOLD_NO_CASH, err, "performGold");
     }
 
     @Test
@@ -195,7 +193,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.GOLD_UNDER_PAYED, err, "performBuy");
+	assertEquals(AppError.GOLD_UNDER_PAYED, err, "performGold");
     }
 
     @Test
@@ -227,7 +225,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.GOLD_OVER_PAYED, err, "performBuy");
+	assertEquals(AppError.GOLD_OVER_PAYED, err, "performGold");
     }
 
     @Test
@@ -259,7 +257,7 @@ public class GoldCommandTest
 
 	AppError err = handler.perform("Michael");
 
-	assertEquals(AppError.NONE, err, "performBuy");
+	assertEquals(AppError.NONE, err, "performGold");
     }
 
 }

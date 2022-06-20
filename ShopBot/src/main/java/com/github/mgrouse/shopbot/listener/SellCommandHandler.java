@@ -57,9 +57,9 @@ public class SellCommandHandler extends CommandHandler
 	}
 
 	// store the lot after setting the player_id, Item_I
-	lot.setPlayerId(m_player.getId());
+	m_lot.setPlayerId(m_player.getId());
 
-	m_dBase.createLot(lot);
+	m_dBase.createLot(m_lot);
 
 	m_message = "You are selling " + m_lot.getSize() + " " + m_lot.getItem().getName() + " for "
 		+ m_lot.getValue().toString() + " gp.";

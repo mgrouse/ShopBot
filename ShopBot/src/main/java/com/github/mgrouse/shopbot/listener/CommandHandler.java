@@ -1,6 +1,7 @@
 package com.github.mgrouse.shopbot.listener;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,11 @@ public class CommandHandler
 
     protected PlayerCharacter m_pc = null;
 
+
+    // this very bad fix this (unite) as soon as 2.0
     protected Lot m_lot = null;
+
+    protected List<Lot> m_lots = null;
 
 
     public enum AppError
@@ -46,7 +51,10 @@ public class CommandHandler
 	GOLD_OVER_PAYED("This looks funny, you payed your bill, and then some."),
 	GOLD_NO_BILL("You don't seem to have a bill to pay."), //
 	GOLD_NO_CASH("You don't seem to have a cash record."),
-	SELL_NOT_OWNED("You do not seem to own enough <ITEM_NAME>.");
+	SELL_NOT_OWNED("You do not seem to own enough <ITEM_NAME>."),
+	ITEM_TRANSACTION_404("You ddo not seem to have a record of a sale transaction."),
+	ITEM_NOT_REMOVED("You do not seem to have handed over <SIZE> <ITEM_NAME>.");
+
 
 	private String m_message = "";
 
@@ -229,5 +237,16 @@ public class CommandHandler
 	return AppError.NONE;
     }
 
+    protected AppError validateSellLotsExist(String playerName)
+    {
+	m_lots = m_dBase.getLotsByPlayer(playerName);
+
+	if ((null == m_lots) || (m_lots.size() == 0))
+	{
+	    return AppError.ITEM_TRANSACTION_404;
+	}
+
+	return AppError.NONE;
+    }
 
 }

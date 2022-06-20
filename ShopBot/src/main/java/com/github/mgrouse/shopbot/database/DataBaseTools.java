@@ -796,7 +796,7 @@ public class DataBaseTools
 	{
 	    try
 	    {
-		String query = "select * from LOT where PLAYER_ID = ?";
+		String query = "select * from LOT where TYPE = 'SELL' and PLAYER_ID = ?";
 		PreparedStatement ps = m_connection.prepareStatement(query);
 
 		ps.setInt(1, player.getId());
@@ -835,6 +835,31 @@ public class DataBaseTools
 
 	return lots;
     }
+
+
+    public void deleteLotsByPlayer(String name)
+    {
+	Player player = readPlayer(name);
+
+	if (null != player)
+	{
+	    try
+	    {
+		String query = "delete from LOT where PLAYER_ID = ?";
+		PreparedStatement ps = m_connection.prepareStatement(query);
+
+		ps.setInt(1, player.getId());
+
+		ps.executeUpdate();
+	    }
+	    catch (SQLException e)
+	    {
+		e.printStackTrace();
+	    }
+	}
+
+    }
+
 
     // Item ================================
 

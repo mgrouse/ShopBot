@@ -85,8 +85,12 @@ public class GoldCommandHandler extends CommandHandler
 	    return AppError.GOLD_OVER_PAYED;
 	}
 
-	// if comparison == 0, exact - "Enjoy your Items"
-	m_message = "Enjoy your Items";
+	// if comparison == 0, exact, set player Cash and Bill to 0
+	m_player.setBill(new BigDecimal("0.00"));
+	m_player.setCash(new BigDecimal("0.00"));
+
+	// "Enjoy your Items"
+	m_message = "Enjoy your Items.";
 	return AppError.NONE;
     }
 

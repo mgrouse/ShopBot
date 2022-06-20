@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
 
 public class Inventory
 {
-    List<Lot> m_lots = new ArrayList<Lot>();
+    private List<Lot> m_lots = new ArrayList<Lot>();
 
     Inventory()
     {
@@ -42,7 +42,6 @@ public class Inventory
 		    // add amt to the current lot
 		    lot.setSize(lot.getSize() + quantity);
 
-
 		    break;
 		}
 	    }
@@ -67,17 +66,16 @@ public class Inventory
     {
 	Boolean retVal = false;
 
-	// go thru each item to see if it is the same thing and enough
+	// go thru each item to see if it is the same thing
 	for (Lot l : m_lots)
 	{
 	    // if the same item
 	    if (l.getName().contentEquals(lot.getName()))
 	    {
-		// and >= amount
-		if (l.getSize() >= lot.getSize())
+		// ?Inventory.size ("CurrentOwned") > lot.NumOwned - lot.size?
+		if (l.getSize() > lot.getNumOwned() - lot.getSize())
 		{
-		    // set the Num Owned
-		    lot.setNumOwned(l.getSize());
+		    // yep they still got items they said they would sell
 		    retVal = true;
 		    break;
 		}
@@ -86,4 +84,6 @@ public class Inventory
 
 	return retVal;
     }
+
+
 }

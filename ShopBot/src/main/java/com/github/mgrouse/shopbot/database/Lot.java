@@ -43,6 +43,12 @@ public class Lot
 
     }
 
+    public Lot(Integer amt, String name)
+    {
+	m_size = amt;
+	m_name = name;
+    }
+
     public Lot(Integer amt, String name, TransactionType type)
     {
 	m_size = amt;

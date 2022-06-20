@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
+import com.github.mgrouse.shopbot.database.Lot;
+import com.github.mgrouse.shopbot.net.Inventory;
+import com.github.mgrouse.shopbot.net.NetTools;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
@@ -29,21 +32,60 @@ public class ItemCommandHandler extends CommandHandler
 
     public void parse()
     {
-	// get the argument. 'id' = DNDB_NUM
-	String dndb_Num = m_event.getOption("id").getAsString();
-
 	// get User's Discord Name (Not the Koni nick Name)
 	String pName = m_event.getUser().getName();
 
-	performImport(pName, dndb_Num);
+	perform(pName);
     }
 
     // package function for testing
-    AppError performImport(String pName, String dndb_Num)
+    AppError perform(String pName)
     {
-	return null;
+	AppError err = validate(pName);
 
+	if (err != AppError.NONE)
+	{
+	    return err;
+	}
+
+	// get PC's Inventory
+	Inventory inv = NetTools.getDndbInventory(m_pc.getDNDB_Num());
+
+	Boolean present = false;
+	// for each Lot
+	for (Lot lot : m_lots)
+	{
+	    // make sure that each lot has been removed
+	    present = inv.hasLot(lot);
+
+	    if (present)
+	    {
+		return AppError.ITEM_NOT_REMOVED;
+	    }
+	}
+
+	// OK we made it! remove the lots from the database.
+	m_dBase.deleteLotsByPlayer(pName);
+
+	m_message = "Enjoy your gold.";
+
+	return AppError.NONE;
     }
+
+    private AppError validate(String pName)
+    {
+	// validate user/active pc
+	AppError err = validatePlayerAndActivePC(pName);
+
+	if (err != AppError.NONE)
+	{
+	    return err;
+	}
+
+	// Validate Lots for user/active pc
+	return validateSellLotsExist(pName);
+    }
+
 
     private void display()
     {
