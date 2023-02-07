@@ -50,7 +50,6 @@ public class ItemReaderTest
 
 	    // look for Items in DB
 	    Item item = dBase.readItem("Shortsword");
-
 	    assertNotNull(item, "Read an Item ");
 	    assertEquals(1, item.getId(), "Item ID ");
 	    assertEquals("Shortsword", item.getName(), "Item Name ");

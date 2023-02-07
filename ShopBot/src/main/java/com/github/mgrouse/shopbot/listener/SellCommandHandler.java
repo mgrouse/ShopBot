@@ -46,9 +46,9 @@ public class SellCommandHandler extends CommandHandler
     }
 
     // package function for testing
-    AppError perform(String userName, Lot lot)
+    AppError perform(String playerName, Lot lot)
     {
-	AppError err = validatePlayerActivePcOwnsLot(userName, lot);
+	AppError err = validate(playerName, lot);
 
 	if (AppError.NONE != err)
 	{
@@ -56,7 +56,7 @@ public class SellCommandHandler extends CommandHandler
 	    return err;
 	}
 
-	// store the lot after setting the player_id, Item_I
+	// store the lot after setting the player_id
 	m_lot.setPlayerId(m_player.getId());
 
 	m_dBase.createLot(m_lot);
@@ -68,6 +68,19 @@ public class SellCommandHandler extends CommandHandler
 	return AppError.NONE;
     }
 
+    private AppError validate(String playerName, Lot lot)
+    {
+	// Make sure Player is not already in transaction.
+	AppError err = validatePlayerNotInTransaction(playerName);
+
+	if (AppError.NONE != err)
+	{
+	    m_message = AppError.BUY_SELL_ALREADY_IN_TRANSACTION.message();
+	    return AppError.BUY_SELL_ALREADY_IN_TRANSACTION;
+	}
+
+	return err = validatePlayerActivePcOwnsLot(playerName, lot);
+    }
 
     private void display()
     {

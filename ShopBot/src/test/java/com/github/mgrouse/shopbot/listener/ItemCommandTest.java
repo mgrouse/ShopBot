@@ -86,7 +86,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("");
+	player.setActiveDNDB_Id("");
 
 	dBase.createPlayer(player);
 
@@ -104,7 +104,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(DRUID_DNDB_NUM);
+	player.setActiveDNDB_Id(DRUID_DNDB_NUM);
 
 	dBase.createPlayer(player);
 
@@ -123,7 +123,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(BROKE_DNDB);
+	player.setActiveDNDB_Id(BROKE_DNDB);
 
 	dBase.createPlayer(player);
 
@@ -148,7 +148,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(DRUID_DNDB_NUM);
+	player.setActiveDNDB_Id(DRUID_DNDB_NUM);
 
 	dBase.createPlayer(player);
 
@@ -173,7 +173,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(DRUID_DNDB_NUM);
+	player.setActiveDNDB_Id(DRUID_DNDB_NUM);
 
 	player = dBase.createPlayer(player);
 
@@ -209,7 +209,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(DRUID_DNDB_NUM);
+	player.setActiveDNDB_Id(DRUID_DNDB_NUM);
 
 	player = dBase.createPlayer(player);
 
@@ -244,7 +244,7 @@ public class ItemCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(DRUID_DNDB_NUM);
+	player.setActiveDNDB_Id(DRUID_DNDB_NUM);
 
 	player = dBase.createPlayer(player);
 

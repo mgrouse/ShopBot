@@ -58,7 +58,7 @@ public class LotTest
 	// Create and fill a Lot
 
 	// this is what it looks like at param checking time
-	Lot lot = new Lot(1, "Shortsword", TransactionType.PURCHASE);
+	Lot lot = new Lot(1, "Shortsword", TransactionType.BUY);
 
 	// this is what it looks like at validation time
 	lot.setItemId(item.getId());
@@ -71,7 +71,7 @@ public class LotTest
 	assertNotNull(lot, "createLot ");
 	assertEquals(1, lot.getId(), "Lot Id ");
 	assertEquals("Shortsword", lot.getName(), "Lot Name");
-	assertEquals("PURCHASE", lot.getType().toString(), "PURCHASE");
+	assertEquals("BUY", lot.getType().toString(), "PURCHASE");
 
 	assertEquals(0, lot.getPlayerId(), "PLayer ID");
 	assertEquals(1, lot.getItemId(), "Item ID");
@@ -88,7 +88,7 @@ public class LotTest
 	assertNotNull(lot, "createLot ");
 	assertEquals(1, lot.getId(), "Lot Id ");
 	assertEquals("Shortsword", lot.getName(), "Lot Name");
-	assertEquals("PURCHASE", lot.getType().toString(), "PURCHASE");
+	assertEquals("BUY", lot.getType().toString(), "PURCHASE");
 
 	assertEquals(0, lot.getPlayerId(), "PLayer ID");
 	assertEquals(1, lot.getItemId(), "Item ID");
@@ -105,7 +105,7 @@ public class LotTest
 	assertNotNull(lot, "createLot ");
 	assertEquals(1, lot.getId(), "Lot Id ");
 	assertEquals("Shortsword", lot.getName(), "Lot Name");
-	assertEquals("PURCHASE", lot.getType().toString(), "PURCHASE");
+	assertEquals("BUY", lot.getType().toString(), "PURCHASE");
 
 	assertEquals(0, lot.getPlayerId(), "PLayer ID");
 	assertEquals(1, lot.getItemId(), "Item ID");
@@ -128,7 +128,7 @@ public class LotTest
 	assertNotNull(lot, "createLot ");
 	assertEquals(1, lot.getId(), "Lot Id ");
 	assertEquals("Shortsword", lot.getName(), "Lot Name");
-	assertEquals("PURCHASE", lot.getType().toString(), "PURCHASE");
+	assertEquals("BUY", lot.getType().toString(), "PURCHASE");
 
 	assertEquals(0, lot.getPlayerId(), "PLayer ID");
 	assertEquals(1, lot.getItemId(), "Item ID");

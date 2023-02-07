@@ -80,9 +80,17 @@ public class NetTools
 
 		retVal.setDNDB_Num(dndbNum);
 
-		retVal.setAvatarURL(data.get("avatarUrl").getAsString());
+		if (!data.get("name").isJsonNull())
+		{
+		    retVal.setName(data.get("name").getAsString());
+		}
 
-		retVal.setName(data.get("name").getAsString());
+
+		if (!data.get("avatarUrl").isJsonNull())
+		{
+		    retVal.setAvatarURL(data.get("avatarUrl").getAsString());
+		}
+
 	    }
 
 	}
@@ -101,7 +109,7 @@ public class NetTools
 
     public static BigDecimal getDndbCurrency(String dndbNum)
     {
-	BigDecimal retVal = null;
+	BigDecimal retVal = new BigDecimal("0.00");
 
 	try
 	{
@@ -118,10 +126,13 @@ public class NetTools
 
 	    if (null != data)
 	    {
-		JsonObject money = data.get("currencies").getAsJsonObject();
+		if (!data.get("currencies").isJsonNull())
+		{
+		    JsonObject money = data.get("currencies").getAsJsonObject();
 
-		// convert money into Big Decimal
-		retVal = new MoneyPouch(money).asBigDecimal();
+		    // convert money into Big Decimal
+		    retVal = new MoneyPouch(money).asBigDecimal();
+		}
 	    }
 
 	}

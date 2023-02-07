@@ -49,7 +49,7 @@ public class RemoveCommandTest
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
-	p.setCurrCharDNDB_Id("");
+	p.setActiveDNDB_Id("");
 
 	dBase.createPlayer(p);
 
@@ -68,7 +68,7 @@ public class RemoveCommandTest
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
-	p.setCurrCharDNDB_Id("12345678");
+	p.setActiveDNDB_Id("12345678");
 	p.setBill(new BigDecimal("20.00"));
 	p.setCash(new BigDecimal("10.00"));
 
@@ -100,7 +100,7 @@ public class RemoveCommandTest
 	p = dBase.readPlayer("Michael");
 
 	// assert player Curr PC is NOT cleared
-	assertEquals("12345678", p.getCurrCharDNDB_Id(), "Cleared Curr Char DNB");
+	assertEquals("12345678", p.getActiveDNDB_Id(), "Cleared Curr Char DNB");
 
 	// assert there is still a bill
 	assertEquals("20.00", p.getBill().toString(), "Bill");
@@ -113,7 +113,7 @@ public class RemoveCommandTest
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
-	p.setCurrCharDNDB_Id("12345678");
+	p.setActiveDNDB_Id("12345678");
 	p.setBill(new BigDecimal("20.00"));
 	p.setCash(new BigDecimal("10.00"));
 
@@ -145,7 +145,7 @@ public class RemoveCommandTest
 	p = dBase.readPlayer("Michael");
 
 	// assert player Curr PC is cleared
-	assertEquals("", p.getCurrCharDNDB_Id(), "Cleared Curr Char DNB");
+	assertEquals("", p.getActiveDNDB_Id(), "Cleared Curr Char DNB");
 
 	// assert there is no bill
 	assertEquals("0.00", p.getBill().toString(), "Bill");

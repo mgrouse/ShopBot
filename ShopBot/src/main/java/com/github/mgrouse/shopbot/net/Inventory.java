@@ -50,7 +50,7 @@ public class Inventory
 	    if (found == false)
 	    {
 		// add it
-		m_lots.add(new Lot(quantity, itemName, TransactionType.PURCHASE));
+		m_lots.add(new Lot(quantity, itemName, TransactionType.BUY));
 	    }
 	}
 
@@ -62,25 +62,60 @@ public class Inventory
 	return m_lots.isEmpty();
     }
 
+    // looks through the inventory to see if there are at least
+    // lot.size of lot.name objects.
+    // sets lot.numOwned = inv.size
     public Boolean hasLot(Lot lot)
     {
 	Boolean retVal = false;
-
 	// go thru each item to see if it is the same thing
-	for (Lot l : m_lots)
+	for (Lot inv : m_lots)
 	{
 	    // if the same item
-	    if (l.getName().contentEquals(lot.getName()))
+	    if (inv.getName().contentEquals(lot.getName()))
 	    {
-		// ?Inventory.size ("CurrentOwned") > lot.NumOwned - lot.size?
-		if (l.getSize() > lot.getNumOwned() - lot.getSize())
+		// Inventory.size > lot.size?
+		if (inv.getSize() >= lot.getSize())
 		{
-		    // yep they still got items they said they would sell
+		    // set the numOwned to the amount in inv
+		    lot.setNumOwned(inv.getSize());
+
+		    // yep they have at least as many
 		    retVal = true;
 		    break;
 		}
 	    }
 	}
+
+	return retVal;
+    }
+
+    // looks at the inventory to see if objects called lot.name
+    // the invLot.size <= lot.NumOwned - lot.size
+    // indicating the items to be sold have been removed
+    public Boolean hasRemovedLot(Lot lot)
+    {
+	Boolean retVal = true;
+
+	// go thru each item to see if it is the same Item
+	for (Lot inv : m_lots)
+	{
+	    // if the same item
+	    if (inv.getName().contentEquals(lot.getName()))
+	    {
+		// ?Inventory.size ("CurrentOwned") > lot.NumOwned - lot.size?
+		if (inv.getSize() > lot.getNumOwned() - lot.getSize())
+		{
+		    // yep they still got items they said they would sell
+		    retVal = false;
+		    break;
+		}
+	    }
+	}
+
+	// if we made it all the way through the loop,
+	// they must have gotten rid of at least as many as they promised
+	// as they have none.
 
 	return retVal;
     }

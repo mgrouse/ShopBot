@@ -59,18 +59,20 @@ public class RemoveCommandHandler extends CommandHandler
 	}
 
 	// if the Player.CurrPC == the PC to remove
-	if (m_player.getCurrCharDNDB_Id().contentEquals(m_pc.getDNDB_Num()))
+	if (m_player.getActiveDNDB_Id().contentEquals(m_pc.getDNDB_Num()))
 	{
 	    // clear the CurrPC field
-	    m_player.setCurrCharDNDB_Id("");
+	    m_player.setActiveDNDB_Id("");
 
-	    // clear the transaction as it was for this PC
+	    // clear any transaction as it was for this PC
 	    m_player.setBill(new BigDecimal("0.00"));
 	    m_player.setCash(new BigDecimal("0.00"));
 
 	    // update player in DB
 	    m_dBase.updatePlayer(m_player);
 	}
+
+	m_message = "The PC " + m_pc.getName() + " has been removed from the ShopBot system";
 
 	// get rid of the PC
 	m_dBase.destroyCharacter(m_pc);

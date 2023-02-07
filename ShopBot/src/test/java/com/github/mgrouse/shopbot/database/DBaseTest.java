@@ -41,7 +41,7 @@ class DBaseTest
 	// Create and fill player1
 	Player player1 = new Player();
 	player1.setDiscordName("Michael");
-	player1.setCurrCharDNDB_Id("12345678");
+	player1.setActiveDNDB_Id("12345678");
 
 
 	// DBase create
@@ -50,7 +50,7 @@ class DBaseTest
 	assertNotNull(player1, "createPlayer ");
 	assertEquals(1, player1.getId(), "Player1 Id ");
 	assertEquals("Michael", player1.getDiscordName(), "DiscordName ");
-	assertEquals("12345678", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+	assertEquals("12345678", player1.getActiveDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals("0.00", player1.getCash().toString(), "Cash ");
 	assertEquals("0.00", player1.getBill().toString(), "Bill ");
 
@@ -63,13 +63,13 @@ class DBaseTest
 	assertNotNull(player2, "readPlayer player2 ");
 	assertEquals(1, player2.getId(), "Player2 Id ");
 	assertEquals("Michael", player2.getDiscordName(), "DiscordName ");
-	assertEquals("12345678", player2.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+	assertEquals("12345678", player2.getActiveDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals("0.00", player1.getCash().toString(), "Cash ");
 	assertEquals("0.00", player1.getBill().toString(), "Bill ");
 
 	// modify player1
 	player1.setDiscordName("Grouse");
-	player1.setCurrCharDNDB_Id("87654321");
+	player1.setActiveDNDB_Id("87654321");
 	player1.setCash(new BigDecimal("12.34"));
 	player1.setBill(new BigDecimal("56.78"));
 
@@ -84,7 +84,7 @@ class DBaseTest
 	assertNotNull(player1, "createPlayer shouuld return an object ");
 	assertEquals(1, player1.getId(), "Player1 Id ");
 	assertEquals("Grouse", player1.getDiscordName(), "DiscordName ");
-	assertEquals("87654321", player1.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+	assertEquals("87654321", player1.getActiveDNDB_Id(), "CurrCharDNDB_Id ");
 	assertEquals("12.34", player1.getCash().toString(), "Cash ");
 	assertEquals("56.78", player1.getBill().toString(), "Bill ");
 
@@ -167,7 +167,7 @@ class DBaseTest
 	// Create and fill player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("87654321");
+	player.setActiveDNDB_Id("87654321");
 
 
 	// Create and fill character1
@@ -199,7 +199,7 @@ class DBaseTest
 	assertNotNull(player, "Read a Player ");
 	assertEquals(1, player.getId(), "Player Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
-	assertEquals("87654321", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+	assertEquals("87654321", player.getActiveDNDB_Id(), "CurrCharDNDB_Id ");
 
 	// read and check pc
 	pc = dBase.readCharacter("12345678");
@@ -217,7 +217,7 @@ class DBaseTest
 	// Create and fill player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("87654321");
+	player.setActiveDNDB_Id("87654321");
 
 
 	player = dBase.createPlayer(player);
@@ -287,7 +287,7 @@ class DBaseTest
 	// Create and fill player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("");
+	player.setActiveDNDB_Id("");
 
 	player = dBase.createPlayer(player);
 
@@ -304,7 +304,7 @@ class DBaseTest
 	pc = dBase.createCharacter(pc);
 
 	// modify player
-	player.setCurrCharDNDB_Id("87654321");
+	player.setActiveDNDB_Id("87654321");
 
 	// associate them
 	dBase.associatePlayerAndPC(player, pc);
@@ -325,7 +325,7 @@ class DBaseTest
 	// Create and fill player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("87654321");
+	player.setActiveDNDB_Id("87654321");
 
 
 	player = dBase.createPlayer(player);
@@ -462,6 +462,32 @@ class DBaseTest
 
 	assertNull(item, "Read after delete all Items ");
     }
+
+//    @Test
+//    void testItemNameCaseAndRegExp()
+//    {
+//	// Create and fill Item
+//	Item item = new Item();
+//
+//	item.setName("Short,sword");
+//	item.setCategory("Weapon");
+//	item.setBuyAmt("10.00");
+//	item.setSellAmt("5.00");
+//
+//	// DBase create
+//	item = dBase.createItem(item);
+//
+//	// read
+//	item = dBase.readItem("short,sword");
+//
+//	// Assert
+//	assertNotNull(item, "Read an Item ");
+//	assertEquals(1, item.getId(), "Item ID ");
+//	assertEquals("Shortsword", item.getName(), "Item Name ");
+//	assertEquals("Weapon", item.getCategory(), "Item Category ");
+//	assertEquals("10.00", item.getBuyAmt().toString(), "Item BuyAmt ");
+//	assertEquals("5.00", item.getSellAmt().toString(), "Item SellAmt ");
+//    }
 
     @Test
     void testGetAllItems()

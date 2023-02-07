@@ -33,6 +33,7 @@ public class ImportCommandTest
 	dBase.deleteAllCharacters();
     }
 
+
     @Test
     void testImportNoDNDB()
     {
@@ -57,7 +58,7 @@ public class ImportCommandTest
 
 	assertNotNull(p);
 	assertEquals(1, p.getId());
-	assertEquals("", p.getCurrCharDNDB_Id());
+	assertEquals("", p.getActiveDNDB_Id());
 
 
 	// look for the character
@@ -77,7 +78,7 @@ public class ImportCommandTest
 	// place a user in the DB
 	Player p = new Player();
 	p.setDiscordName("GoldenScarab");
-	p.setCurrCharDNDB_Id("");
+	p.setActiveDNDB_Id("");
 
 	dBase.createPlayer(p);
 
@@ -92,7 +93,7 @@ public class ImportCommandTest
 
 	assertNotNull(p);
 	assertEquals(1, p.getId());
-	assertEquals("", p.getCurrCharDNDB_Id());
+	assertEquals("", p.getActiveDNDB_Id());
 
 
 	// look for the character

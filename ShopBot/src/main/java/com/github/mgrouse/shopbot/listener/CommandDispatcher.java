@@ -28,10 +28,17 @@ public class CommandDispatcher extends ListenerAdapter
 	Boolean isEphemeral = false;
 
 	// We only have 3 seconds until Discord sends "App not responding"
+	// defer reply cancels that message
 	event.deferReply(isEphemeral).queue();
 
 	switch (event.getName())
 	{
+	    case "status":
+	    {
+		StatusCommandHandler stausHandler = new StatusCommandHandler(m_dBase);
+		stausHandler.go(event);
+		break;
+	    }
 	    case "import":
 	    {
 		ImportCommandHandler importHandler = new ImportCommandHandler(m_dBase);

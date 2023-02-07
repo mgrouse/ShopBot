@@ -45,27 +45,29 @@ public class ItemCommandHandler extends CommandHandler
 
 	if (err != AppError.NONE)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
 	// get PC's Inventory
 	Inventory inv = NetTools.getDndbInventory(m_pc.getDNDB_Num());
 
-	Boolean present = false;
+	Boolean removed = false;
 	// for each Lot
 	for (Lot lot : m_lots)
 	{
 	    // make sure that each lot has been removed
-	    present = inv.hasLot(lot);
+	    removed = inv.hasRemovedLot(lot);
 
-	    if (present)
+	    if (!removed)
 	    {
+		m_message = AppError.ITEM_NOT_REMOVED.message();
 		return AppError.ITEM_NOT_REMOVED;
 	    }
 	}
 
 	// OK we made it! remove the lots from the database.
-	m_dBase.deleteLotsByPlayer(pName);
+	m_dBase.deleteSellLotsByPlayer(pName);
 
 	m_message = "Enjoy your gold.";
 

@@ -7,7 +7,7 @@ public class Player
 {
     private Integer m_Id = 0;
 
-    private String m_dndb_Id = "";
+    private String m_activeDndb_Id = "";
 
     private String m_discordName = "";
 
@@ -33,15 +33,15 @@ public class Player
     }
 
 
-    public String getCurrCharDNDB_Id()
+    public String getActiveDNDB_Id()
     {
-	return m_dndb_Id;
+	return m_activeDndb_Id;
     }
 
 
-    public void setCurrCharDNDB_Id(String id)
+    public void setActiveDNDB_Id(String id)
     {
-	m_dndb_Id = id;
+	m_activeDndb_Id = id;
     }
 
 
@@ -104,7 +104,7 @@ public class Player
     @Override
     public String toString()
     {
-	return "Player [m_ID=" + m_Id + ", m_dndb_Id=" + m_dndb_Id + ", m_discordName=" + m_discordName + ", cash="
+	return "Player [m_ID=" + m_Id + ", m_dndb_Id=" + m_activeDndb_Id + ", m_discordName=" + m_discordName + ", cash="
 		+ cash + ", bill=" + bill + "]";
     }
 }

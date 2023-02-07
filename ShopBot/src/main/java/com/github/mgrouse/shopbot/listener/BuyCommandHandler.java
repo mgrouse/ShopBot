@@ -68,9 +68,9 @@ public class BuyCommandHandler extends CommandHandler
 
 	// ===
 	// not req'd may be missing
-	Integer amt2 = m_event.getOption("amt2").getAsInt();
+	// Integer amt2 = m_event.getOption("amt2").getAsInt();
 
-	String itemName2 = m_event.getOption("item2").getAsString();
+	// String itemName2 = m_event.getOption("item2").getAsString();
 
 
 	perform(userName, amt1, itemName1);
@@ -91,7 +91,7 @@ public class BuyCommandHandler extends CommandHandler
 	BigDecimal bill = m_item.getBuyAmt().multiply(new BigDecimal(amt));
 
 	// check PC's gold amt
-	BigDecimal cash = NetTools.getDndbCurrency(m_player.getCurrCharDNDB_Id());
+	BigDecimal cash = NetTools.getDndbCurrency(m_player.getActiveDNDB_Id());
 
 	int difference = cash.compareTo(bill);
 
@@ -116,8 +116,9 @@ public class BuyCommandHandler extends CommandHandler
     }
 
 
-    private AppError validate(String userName, Integer amt, String itemName)
+    private AppError validate(String playerName, Integer amt, String itemName)
     {
+
 	if (amt < 1)
 	{
 	    return AppError.NO_SIZE;
@@ -133,7 +134,23 @@ public class BuyCommandHandler extends CommandHandler
 	}
 
 	// get user and PC if any and make sure they are still there
-	return validatePlayerAndActivePC(userName);
+	AppError err = validatePlayerAndActivePC(playerName);
+
+	if (AppError.NONE != err)
+	{
+	    return err;
+	}
+
+	// Make sure Player is not already in transaction.
+	err = validatePlayerNotInTransaction(playerName);
+
+	if (AppError.NONE != err)
+	{
+	    m_message = AppError.BUY_SELL_ALREADY_IN_TRANSACTION.message();
+	    return AppError.BUY_SELL_ALREADY_IN_TRANSACTION;
+	}
+
+	return AppError.NONE;
     }
 
     private void display()

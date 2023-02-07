@@ -53,7 +53,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("");
+	player.setActiveDNDB_Id("");
 
 	dBase.createPlayer(player);
 
@@ -71,7 +71,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+	player.setActiveDNDB_Id(GOBO_DNDB_NUM);
 
 	dBase.createPlayer(player);
 
@@ -90,7 +90,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(BROKE_DNDB);
+	player.setActiveDNDB_Id(BROKE_DNDB);
 
 	dBase.createPlayer(player);
 
@@ -115,7 +115,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+	player.setActiveDNDB_Id(GOBO_DNDB_NUM);
 	// no bill
 
 	dBase.createPlayer(player);
@@ -142,7 +142,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+	player.setActiveDNDB_Id(GOBO_DNDB_NUM);
 	player.setBill(new BigDecimal("10.00"));
 	// no cash
 
@@ -170,7 +170,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+	player.setActiveDNDB_Id(GOBO_DNDB_NUM);
 	player.setCash(new BigDecimal("20.00"));
 	player.setBill(new BigDecimal("12.00"));
 	// =======================================
@@ -202,7 +202,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+	player.setActiveDNDB_Id(GOBO_DNDB_NUM);
 	player.setCash(new BigDecimal("30.00"));
 	player.setBill(new BigDecimal("8.00"));
 	// =======================================
@@ -234,7 +234,7 @@ public class GoldCommandTest
 	// make player
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id(GOBO_DNDB_NUM);
+	player.setActiveDNDB_Id(GOBO_DNDB_NUM);
 	player.setCash(new BigDecimal("30.00"));
 	player.setBill(new BigDecimal("10.00"));
 	// ========

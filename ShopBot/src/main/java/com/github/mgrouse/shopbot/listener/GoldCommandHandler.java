@@ -59,7 +59,7 @@ public class GoldCommandHandler extends CommandHandler
 	}
 
 	// get PC "cash on hand" from DNDB
-	BigDecimal pcCurrentCash = NetTools.getDndbCurrency(m_player.getCurrCharDNDB_Id());
+	BigDecimal pcCurrentCash = NetTools.getDndbCurrency(m_player.getActiveDNDB_Id());
 
 	BigDecimal pcOldCash = m_player.getCash();
 
@@ -89,6 +89,9 @@ public class GoldCommandHandler extends CommandHandler
 	m_player.setBill(new BigDecimal("0.00"));
 	m_player.setCash(new BigDecimal("0.00"));
 
+	// update DB
+	m_dBase.updatePlayer(m_player);
+
 	// "Enjoy your Items"
 	m_message = "Enjoy your Items.";
 	return AppError.NONE;
@@ -104,9 +107,7 @@ public class GoldCommandHandler extends CommandHandler
 	    return err;
 	}
 
-	err = validatePlayerHasBill(m_player);
-
-	return err;
+	return validatePlayerHasBill(m_player);
     }
 
     private void display()

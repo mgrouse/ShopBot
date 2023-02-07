@@ -46,7 +46,7 @@ public class AbortCommandHandler extends CommandHandler
 
     AppError performAbort(String playerName)
     {
-	AppError err = validate(playerName);
+	AppError err = validatePlayer(playerName);
 
 	if (AppError.NONE != err)
 	{
@@ -54,31 +54,40 @@ public class AbortCommandHandler extends CommandHandler
 	    return err;
 	}
 
-	// if there is a Transaction
+
+	// if there is a Sell Transaction
+	if (sellLotsExist(playerName))
+	{
+	    m_dBase.deleteSellLotsByPlayer(playerName);
+	    m_message = "Sell Transaction has been aborted. ";
+	}
+
+
+	// if there is a Buy Transaction
 	if (m_player.hasBill())
 	{
 	    // clear and update
 	    m_player.clearTransaction();
 	    m_dBase.updatePlayer(m_player);
 
-	    m_message = "Transaction has been aborted.";
+	    m_message = "Buy Transaction has been aborted. ";
 	}
 
 	return AppError.NONE;
     }
 
 
-    private AppError validate(String playerName)
-    {
-	AppError err = validatePlayer(playerName);
-
-	if (AppError.NONE != err)
-	{
-	    return err;
-	}
-
-	return validatePlayerHasBill(m_player);
-    }
+//    private AppError validate(String playerName)
+//    {
+//	AppError err = validatePlayer(playerName);
+//
+//	if (AppError.NONE != err)
+//	{
+//	    return err;
+//	}
+//
+//	return validatePlayerHasBill(m_player);
+//    }
 
     private void display()
     {

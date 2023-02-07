@@ -48,35 +48,65 @@ public class NetTest
     }
 
     @Test
-    void getDndbInventoryHasItTest()
+    void getDndbInventoryHasOneTest()
     {
 	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
 
-	Lot oneScimitar = new Lot(1, "Scimitar", TransactionType.PURCHASE);
+	Lot oneScimitar = new Lot(1, "Scimitar", TransactionType.SELL);
+
 	Boolean hasScimitar = i.hasLot(oneScimitar);
 
 	assertTrue(hasScimitar, "Has a Scimitar");
     }
 
     @Test
-    void getDndbInventoryHasOneTest()
+    void getDndbInventoryHasTwoTest()
     {
 	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
 
-	Lot twoScimitar = new Lot(2, "Scimitar", TransactionType.PURCHASE);
+	Lot twoScimitar = new Lot(2, "Scimitar", TransactionType.SELL);
+
 	Boolean hasScimitars = i.hasLot(twoScimitar);
 
 	assertFalse(hasScimitars, "Has two Scimitars");
     }
 
     @Test
-    void getDndbInventoryDoesNotHaveItTest()
+    void getDndbInventoryDoesNotHaveOneTest()
     {
 	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
 
-	Lot oneMace = new Lot(1, "Mace", TransactionType.PURCHASE);
+	Lot oneMace = new Lot(1, "Mace", TransactionType.SELL);
+
+	// Druid has no mace
 	Boolean hasMace = i.hasLot(oneMace);
 
 	assertFalse(hasMace, "Has no Mace");
+    }
+
+    @Test
+    void getDndbInventoryRemovedOneTest()
+    {
+	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
+
+	// Druid has no mace
+	Lot oneMace = new Lot(1, 1, "Mace");
+
+	Boolean hasMace = i.hasRemovedLot(oneMace);
+
+	assertTrue(hasMace, "Has no Mace");
+    }
+
+    @Test
+    void getDndbInventoryRemovedOneHasOneTest()
+    {
+	Inventory i = NetTools.getDndbInventory(DRUID_DNDB_NUM);
+
+	// Druid has no mace
+	Lot oneMace = new Lot(2, 1, "Scimitar");
+
+	Boolean hasMace = i.hasRemovedLot(oneMace);
+
+	assertTrue(hasMace, "Has one Scimitar");
     }
 }

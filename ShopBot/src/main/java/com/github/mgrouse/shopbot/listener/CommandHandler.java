@@ -36,23 +36,28 @@ public class CommandHandler
 
     public enum AppError
     {
-	NONE("Eveerything is Fiiiiiinnnne"), //
-	DNDB_404("Character with Id: <DNDB_NUM> was not found at DND Beyond."),
-	NO_PLAYER("You have no characters in the ShopBot system."), //
+	NONE("Everything is Fiiiiiinnnne"), //
+	DNDB_404("Character with Id: <DNDB_NUM> was not found at DND Beyond."), //
+	NO_PLAYER("You have not imported any PCs into the ShopBot system."), //
 	NO_PC("The Character: <PC_NAME> was not found"), //
-	ACT_PC_NOT_SET("You have no active character listed. Use the /character command."),
-	ACT_PC_DNDB_404("Your active character cannot be found on DND Beyond."),
-	ACT_PC_DBASE_404("Error: You seem to have an active PC: <DNDB_NUM> registered but not found in Data Base."),
-	IN_TRANSACTION("You cannot switch PCs in the middle of a transaction"),
+	ACT_PC_NOT_SET("You have no active character listed. Use the /character command."), //
+	ACT_PC_DNDB_404("Your active character cannot be found on DND Beyond."), //
+	ACT_PC_DBASE_404("Error: You seem to have an active PC: <DNDB_NUM> registered but not found in Data Base."), //
+	GENERIC_ALREADY_IN_TRANSACTION(
+		"You cannot perform the current command becausee you are in the middle of a transaction."), //
+	NO_SWITCH_IN_TRANSACTION(
+		"You cannot switch PCs in the middle of a transaction. Please finish or /abort that transaction before switching the Active PC."), //
 	NO_SIZE("You cannot exchange 0 of something."), //
 	UNKNOWN_ITEM("I do not know what a <ITEM_NAME> is."),
+	BUY_SELL_ALREADY_IN_TRANSACTION(
+		"Your active character is already in the middle of a transaction. Please finish or /abort that transaction before beginning another."), //
 	BUY_INSUFFICIENT_FUNDS("Your total bill of: <BILL> gp. Is more than you have."),
 	GOLD_UNDER_PAYED("You did not pay your bill."),
 	GOLD_OVER_PAYED("This looks funny, you payed your bill, and then some."),
 	GOLD_NO_BILL("You don't seem to have a bill to pay."), //
 	GOLD_NO_CASH("You don't seem to have a cash record."),
 	SELL_NOT_OWNED("You do not seem to own enough <ITEM_NAME>."),
-	ITEM_TRANSACTION_404("You ddo not seem to have a record of a sale transaction."),
+	ITEM_TRANSACTION_404("You do not seem to have a record of a sale transaction."),
 	ITEM_NOT_REMOVED("You do not seem to have handed over <SIZE> <ITEM_NAME>.");
 
 
@@ -103,6 +108,33 @@ public class CommandHandler
 	return AppError.NONE;
     }
 
+    protected AppError validateActivePCIfAny()
+    {
+	// Its perfectly fine if there is no Active PC
+
+	// If there is one listed...
+	if (!m_player.getActiveDNDB_Id().isEmpty())
+	{
+	    // Check to see if its in the DB
+	    m_pc = m_dBase.getPlayersActivePc(m_player.getDiscordName());
+
+	    if (null == m_pc)
+	    {
+		return AppError.ACT_PC_DBASE_404;
+	    }
+
+	    // Also check to see if its on DNDB
+	    AppError err = validatePCOnDNDB(m_pc.getDNDB_Num());
+
+	    if (AppError.NONE != err)
+	    {
+		return AppError.ACT_PC_DNDB_404;
+	    }
+	}
+
+	return AppError.NONE;
+    }
+
     protected AppError validatePCOnDNDB(String dndb_Num)
     {
 	// still on DDNDB?
@@ -145,19 +177,19 @@ public class CommandHandler
 	}
 
 	// Active PC?
-	if (m_player.getCurrCharDNDB_Id().isEmpty())
+	if (m_player.getActiveDNDB_Id().isEmpty())
 	{
 	    return AppError.ACT_PC_NOT_SET;
 	}
 
 	// still on DDNDB?
-	if (!NetTools.isDNDBCharacter(m_player.getCurrCharDNDB_Id()))
+	if (!NetTools.isDNDBCharacter(m_player.getActiveDNDB_Id()))
 	{
 	    return AppError.ACT_PC_DNDB_404;
 	}
 
 	// in the DB
-	m_pc = m_dBase.readCharacter(m_player.getCurrCharDNDB_Id());
+	m_pc = m_dBase.readCharacter(m_player.getActiveDNDB_Id());
 
 	if (null == m_pc)
 	{
@@ -193,7 +225,7 @@ public class CommandHandler
 
     protected AppError validateActivePcOwnsLot(Player player, Lot lot)
     {
-	Inventory inv = NetTools.getDndbInventory(player.getCurrCharDNDB_Id());
+	Inventory inv = NetTools.getDndbInventory(player.getActiveDNDB_Id());
 
 	Boolean hasIt = inv.hasLot(lot);
 
@@ -237,16 +269,70 @@ public class CommandHandler
 	return AppError.NONE;
     }
 
+    protected AppError validatePlayerNotInTransaction(String playerName)
+    {
+	Boolean found = false;
+
+	// look for buy
+	// retVal = m_dBase.buyLotsExistByPlayer(playerName);
+//	if (found)
+//	{
+//	    return AppError.GENERIC_ALREADY_IN_TRANSACTION;
+//	}
+
+	// in 2.0 the above will replace the below
+
+	// look for buy
+	Player player = m_dBase.readPlayer(playerName);
+
+
+	if ((null != player) && (player.hasTransaction()))
+	{
+	    return AppError.GENERIC_ALREADY_IN_TRANSACTION;
+	}
+
+
+	// look for sell
+	found = m_dBase.sellLotsExistByPlayer(playerName);
+
+	if (found)
+	{
+	    return AppError.GENERIC_ALREADY_IN_TRANSACTION;
+	}
+
+	return AppError.NONE;
+    }
+
     protected AppError validateSellLotsExist(String playerName)
     {
-	m_lots = m_dBase.getLotsByPlayer(playerName);
+	m_lots = m_dBase.getSellLotsByPlayer(playerName);
 
-	if ((null == m_lots) || (m_lots.size() == 0))
+	if (m_lots.size() == 0)
 	{
 	    return AppError.ITEM_TRANSACTION_404;
 	}
 
 	return AppError.NONE;
+    }
+
+//    protected AppError validateBuyLotsExist(String playerName)
+//    {
+//
+//    }
+
+
+    protected Boolean sellLotsExist(String playerName)
+    {
+	m_lots = m_dBase.getSellLotsByPlayer(playerName);
+
+	return m_lots.size() > 0;
+    }
+
+    protected Boolean buyLotsExist(String playerName)
+    {
+	m_lots = m_dBase.getBuyLotsByPlayer(playerName);
+
+	return m_lots.size() > 0;
     }
 
 }

@@ -25,10 +25,10 @@ import com.github.mgrouse.shopbot.database.Lot.TransactionType;
 // ID, PLAYER_ID, DNDB_NUM, NAME, AVATAR_URL
 //
 //Table Item
-// ID, Name, Category, Buy_AMT, Sell_AMT    AMTs are  java.math.BigDecimal
+// ID, Name, Category, Buy_AMT, Sell_AMT    (AMounTs are  java.math.BigDecimal)
 //
 //Table Lot
-// ID, PLAYER_ID, Item_ID, SIZE, NUM_OWNED, NAME, VALUE, IS_PURCHASE
+// ID, PLAYER_ID, Item_ID, SIZE, NUM_OWNED, NAME, VALUE, TransactionType [BUY, SELL]
 //
 
 
@@ -147,7 +147,7 @@ public class DataBaseTools
 	    p = new Player();
 
 	    p.setDiscordName(name);
-	    p.setCurrCharDNDB_Id("");
+	    p.setActiveDNDB_Id("");
 	    p.setCash(new BigDecimal("0.00"));
 	    p.setBill(new BigDecimal("0.00"));
 
@@ -169,7 +169,7 @@ public class DataBaseTools
 	{
 	    ps = m_connection.prepareStatement(query);
 	    ps.setString(1, player.getDiscordName());
-	    ps.setString(2, player.getCurrCharDNDB_Id());
+	    ps.setString(2, player.getActiveDNDB_Id());
 	    ps.setString(3, player.getCash().toString());
 	    ps.setString(4, player.getBill().toString());
 
@@ -210,7 +210,7 @@ public class DataBaseTools
 		    player = new Player();
 
 		    player.setId(rs.getInt("ID"));
-		    player.setCurrCharDNDB_Id(rs.getString("CURR_CHAR_DNDB_NUM"));
+		    player.setActiveDNDB_Id(rs.getString("CURR_CHAR_DNDB_NUM"));
 		    player.setDiscordName(rs.getString("DISCORD_NAME"));
 		    player.setCash(new BigDecimal(rs.getString("CASH")));
 		    player.setBill(new BigDecimal(rs.getString("BILL")));
@@ -236,7 +236,7 @@ public class DataBaseTools
 	{
 	    PreparedStatement ps = m_connection.prepareStatement(query);
 
-	    ps.setString(1, player.getCurrCharDNDB_Id());
+	    ps.setString(1, player.getActiveDNDB_Id());
 	    ps.setString(2, player.getDiscordName());
 	    ps.setString(3, player.getCash().toString());
 	    ps.setString(4, player.getBill().toString());
@@ -298,6 +298,9 @@ public class DataBaseTools
     public void associatePlayerAndPC(@Nonnull Player player, @Nonnull PlayerCharacter pc)
     {
 	pc.setPlayerId(player.getId());
+
+	updateCharacter(pc);
+
     }
 
 
@@ -373,17 +376,17 @@ public class DataBaseTools
     }
 
 
-    public PlayerCharacter getPlayersActivePc(@Nonnull String name)
+    public PlayerCharacter getPlayersActivePc(@Nonnull String playerName)
     {
 	PlayerCharacter pc = null;
 
-	if (null != name)
+	if (null != playerName)
 	{
-	    Player player = readPlayer(name);
+	    Player player = readPlayer(playerName);
 
 	    if (player != null)
 	    {
-		pc = readCharacter(player.getCurrCharDNDB_Id());
+		pc = readCharacter(player.getActiveDNDB_Id());
 	    }
 	}
 	return pc;
@@ -786,7 +789,77 @@ public class DataBaseTools
 //	return true;
 //    }
 
-    public List<Lot> getLotsByPlayer(String name)
+
+    public Boolean buyLotsExistByPlayer(String name)
+    {
+	Boolean retVal = false;
+
+	Player player = readPlayer(name);
+
+	if (null != player)
+	{
+	    try
+	    {
+		String query = "select * from LOT where TYPE = 'BUY' and PLAYER_ID = ?";
+		PreparedStatement ps = m_connection.prepareStatement(query);
+
+		ps.setInt(1, player.getId());
+
+		ResultSet rs = ps.executeQuery();
+
+		if (rs.next())
+		{
+		    retVal = true;
+		}
+
+	    }
+	    catch (SQLException e)
+	    {
+		e.printStackTrace();
+	    }
+
+	}
+	return retVal;
+    }
+
+    public List<Lot> getBuyLotsByPlayer(String name)
+    {
+	return null;
+    }
+
+    public Boolean sellLotsExistByPlayer(String name)
+    {
+	Boolean retVal = false;
+
+	Player player = readPlayer(name);
+
+	if (null != player)
+	{
+	    try
+	    {
+		String query = "select * from LOT where TYPE = 'SELL' and PLAYER_ID = ?";
+		PreparedStatement ps = m_connection.prepareStatement(query);
+
+		ps.setInt(1, player.getId());
+
+		ResultSet rs = ps.executeQuery();
+
+		if (rs.next())
+		{
+		    retVal = true;
+		}
+
+	    }
+	    catch (SQLException e)
+	    {
+		e.printStackTrace();
+	    }
+
+	}
+	return retVal;
+    }
+
+    public List<Lot> getSellLotsByPlayer(String name)
     {
 	List<Lot> lots = new ArrayList<Lot>();
 
@@ -837,7 +910,7 @@ public class DataBaseTools
     }
 
 
-    public void deleteLotsByPlayer(String name)
+    public void deleteSellLotsByPlayer(String name)
     {
 	Player player = readPlayer(name);
 
@@ -845,7 +918,7 @@ public class DataBaseTools
 	{
 	    try
 	    {
-		String query = "delete from LOT where PLAYER_ID = ?";
+		String query = "delete from LOT where TYPE = 'SELL' and PLAYER_ID = ?";
 		PreparedStatement ps = m_connection.prepareStatement(query);
 
 		ps.setInt(1, player.getId());
@@ -1057,7 +1130,13 @@ public class DataBaseTools
 
     public Item readItem(String name)
     {
-	String query = "select * from ITEM where NAME like '%" + name + "%' ";
+	// make the name lower case and all one word
+	String lc_name = name.toLowerCase();
+	lc_name = lc_name.replaceAll("[,' ']+", ""); // .replaceAll(" ", "");
+
+	// String query = "select * from ITEM where REGEXP_REPLACE(NAME, '[,]', '') like
+	// '" + name + "%' ";
+	String query = "select * from ITEM where NAME like '" + name + "%' ";
 
 	Item retVal = null;
 

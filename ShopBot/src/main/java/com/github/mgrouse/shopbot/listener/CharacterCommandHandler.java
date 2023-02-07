@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.mgrouse.shopbot.database.DataBaseTools;
-import com.github.mgrouse.shopbot.database.PlayerCharacter;
 
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -61,8 +60,8 @@ public class CharacterCommandHandler extends CommandHandler
 	    return err;
 	}
 
-	// set players current char to pc.dnb
-	m_player.setCurrCharDNDB_Id(m_pc.getDNDB_Num());
+	// set player.current char = pc.dnb
+	m_player.setActiveDNDB_Id(m_pc.getDNDB_Num());
 
 	// update player in B
 	m_dBase.updatePlayer(m_player);
@@ -78,21 +77,17 @@ public class CharacterCommandHandler extends CommandHandler
 
 	if (AppError.NONE != err)
 	{
+	    m_message = err.message();
 	    return err;
 	}
 
 	// if there is an open transaction
-	if (m_player.hasTransaction())
+	err = validatePlayerNotInTransaction(playerName);
+
+	if (AppError.NONE != err)
 	{
-	    // make sure we find Active PC's name
-
-	    PlayerCharacter active = m_dBase.getPlayersActivePc(playerName);
-
-	    // and warn player about bill
-	    m_message = "The Character: " + active.getName() + " owes " + m_player.getBill().toString() + " gp. /n"
-		    + AppError.IN_TRANSACTION.message();
-
-	    return AppError.IN_TRANSACTION;
+	    m_message = AppError.NO_SWITCH_IN_TRANSACTION.message();
+	    return AppError.NO_SWITCH_IN_TRANSACTION;
 	}
 
 	return AppError.NONE;

@@ -50,7 +50,7 @@ public class CharacterCommandTest
 	// Fill and Create player1
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("");
+	player.setActiveDNDB_Id("");
 
 	player = dBase.createPlayer(player);
 
@@ -70,7 +70,7 @@ public class CharacterCommandTest
 	assertNotNull(player, "createPlayer");
 	assertEquals(1, player.getId(), "Player1 Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
-	assertEquals("", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+	assertEquals("", player.getActiveDNDB_Id(), "CurrCharDNDB_Id ");
     }
 
     @Test
@@ -79,7 +79,7 @@ public class CharacterCommandTest
 	// Create and fill player1
 	Player player = new Player();
 	player.setDiscordName("Michael");
-	player.setCurrCharDNDB_Id("");
+	player.setActiveDNDB_Id("");
 
 	// DBase create
 	player = dBase.createPlayer(player);
@@ -116,7 +116,7 @@ public class CharacterCommandTest
 	assertNotNull(player, "createPlayer");
 	assertEquals(1, player.getId(), "Player1 Id ");
 	assertEquals("Michael", player.getDiscordName(), "DiscordName ");
-	assertEquals("12345678", player.getCurrCharDNDB_Id(), "CurrCharDNDB_Id ");
+	assertEquals("12345678", player.getActiveDNDB_Id(), "CurrCharDNDB_Id ");
 
 	// read and assert PC
 	pc = dBase.readCharacter("12345678");

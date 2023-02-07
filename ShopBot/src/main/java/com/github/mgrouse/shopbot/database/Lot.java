@@ -35,7 +35,7 @@ public class Lot
 
     public enum TransactionType
     {
-	PURCHASE, SELL;
+	BUY, SELL;
     }
 
     protected Lot()
@@ -43,18 +43,21 @@ public class Lot
 
     }
 
-    public Lot(Integer amt, String name)
+    public Lot(Integer size, String name, TransactionType type)
     {
-	m_size = amt;
-	m_name = name;
-    }
-
-    public Lot(Integer amt, String name, TransactionType type)
-    {
-	m_size = amt;
+	m_size = size;
 	m_name = name;
 
 	m_type = type;
+    }
+
+    public Lot(Integer owned, Integer size, String name)
+    {
+	m_numOwned = owned;
+	m_size = size;
+	m_name = name;
+
+	m_type = TransactionType.SELL;
     }
 
     public int getId()
@@ -131,7 +134,7 @@ public class Lot
 	this.setName(item.getName());
 
 	// Value
-	if (m_type == TransactionType.PURCHASE)
+	if (m_type == TransactionType.BUY)
 	{
 	    m_value = getSizeAsBD().multiply(m_item.getBuyAmt());
 	}

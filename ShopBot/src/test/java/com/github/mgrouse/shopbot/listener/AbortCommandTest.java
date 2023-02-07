@@ -49,7 +49,7 @@ public class AbortCommandTest
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
-	p.setCurrCharDNDB_Id("");
+	p.setActiveDNDB_Id("");
 	p.setCash(new BigDecimal("20.00"));
 	p.setBill(new BigDecimal("10.00"));
 
@@ -70,7 +70,7 @@ public class AbortCommandTest
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
-	p.setCurrCharDNDB_Id("12345678");
+	p.setActiveDNDB_Id("12345678");
 
 	p = dBase.createPlayer(p);
 
@@ -103,7 +103,7 @@ public class AbortCommandTest
 	// put a player in the DB
 	Player p = new Player();
 	p.setDiscordName("Michael");
-	p.setCurrCharDNDB_Id("12345678");
+	p.setActiveDNDB_Id("12345678");
 	p.setCash(new BigDecimal("20.00"));
 	p.setBill(new BigDecimal("10.00"));
 

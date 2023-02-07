@@ -84,10 +84,14 @@ public class ShopBot implements EventListener
 	{
 	    e.printStackTrace();
 
+	    // leave this here!
+	    // DO NOT move to finally
+	    // This means you Michael!!!
+	    cleanUp();
 	}
 	finally
 	{
-	    cleanUp();
+
 	}
     }
 
@@ -96,9 +100,12 @@ public class ShopBot implements EventListener
 	jdaBuilder.setStatus(OnlineStatus.ONLINE);
 	jdaBuilder.setActivity(Activity.playing("D&D"));
 
-	// other JDA stuff? memmory cache
+	// other JDA stuff? memmory cache?
 
 	uploadCommands();
+
+	// would there be a way to await some sort of
+	// shut down command? or re-start command?
     }
 
 
@@ -176,6 +183,10 @@ public class ShopBot implements EventListener
 
 	// Item
 	data = Commands.slash("item", "Tells ShopBot that you have removed the sold items from your D&DB sheet.");
+	slashCmds.add(data);
+
+	// Status
+	data = Commands.slash("status", "Displays the Player's PCs and any open transaction.");
 	slashCmds.add(data);
 
 	// add the commands
